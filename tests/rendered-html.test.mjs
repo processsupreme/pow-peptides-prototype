@@ -107,14 +107,29 @@ test("builds out the proof, research, and subscription journeys", async () => {
 test("renders a high-detail, evidence-bounded product record", async () => {
   const reta = (await (await render("/shop/reta-glp-3")).text()).replaceAll("<!-- -->", "");
   const water = (await (await render("/shop/bacteriostatic-water")).text()).replaceAll("<!-- -->", "");
+  assert.match(reta, /One molecule\. Three receptor pathways\./);
+  assert.match(reta, /Why it is studied\./);
+  assert.match(reta, /What sets it apart\./);
   assert.match(reta, /Inside the[\s\S]*research file/);
   assert.match(reta, /Product specification/);
   assert.match(reta, /\$8\.00 \/ mg/);
   assert.match(reta, /COA snapshot/);
-  assert.match(reta, /Identity &amp; classification/);
-  assert.match(reta, /Safety &amp; regulatory/);
+  assert.match(reta, /Research profile/);
+  assert.match(reta, /Evidence &amp; regulatory boundary/);
   assert.match(reta, /pepguide\.net\/peptides\/retatrutide/);
   assert.match(water, /Unit basis varies/);
   assert.match(water, /pepguide\.net\/peptides\/bacteriostatic-water/);
   assert.doesNotMatch(reta, /human dosing|recommended dose/i);
+});
+
+test("offers scalable strength variants without empty gallery controls", async () => {
+  const response = await render("/shop/reta-glp-3");
+  const html = (await response.text()).replaceAll("<!-- -->", "");
+  const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
+  assert.match(html, /Select strength/);
+  for (const strength of ["10 mg", "20 mg", "30 mg"]) assert.match(html, new RegExp(`>${strength}<`));
+  assert.match(html, /pricing scales proportionally/);
+  assert.doesNotMatch(html, /aria-label="(?:Front|Detail|Label|Lot) view"/);
+  assert.doesNotMatch(source, /className="thumbs"/);
+  assert.doesNotMatch(source, /className="reference-card"/);
 });
