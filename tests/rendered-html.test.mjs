@@ -70,6 +70,14 @@ test("frames the catalog as a shopping destination", async () => {
   assert.doesNotMatch(html, /Power up your[\s\S]*research/i);
 });
 
+test("keeps bacteriostatic water after every peptide and blend", async () => {
+  const response = await render("/shop");
+  const html = (await response.text()).replaceAll("<!-- -->", "");
+  const water = html.lastIndexOf("Bacteriostatic Water");
+  const lastPeptide = html.lastIndexOf("Vilon");
+  assert.ok(water > lastPeptide, "the research supply should render after the compound catalog");
+});
+
 test("uses approved POW! artwork on product bottles", async () => {
   const response = await render("/shop");
   const html = await response.text();
