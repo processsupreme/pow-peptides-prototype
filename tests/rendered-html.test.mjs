@@ -133,3 +133,10 @@ test("offers scalable strength variants without empty gallery controls", async (
   assert.doesNotMatch(source, /className="thumbs"/);
   assert.doesNotMatch(source, /className="reference-card"/);
 });
+
+test("lets product story headings use the full page width", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.story-lead\{display:flex;flex-direction:column/);
+  assert.match(css, /\.story-lead h2\{width:100%;max-width:none/);
+  assert.doesNotMatch(css, /\.story-lead\{display:grid;grid-template-columns:\.8fr 1\.2fr/);
+});
