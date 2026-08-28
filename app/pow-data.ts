@@ -55,10 +55,10 @@ export const products: Product[] = [
 ];
 
 export const coaRecords = [
-  { product:"Reta GLP-3", lot:"POW-XXXX", type:"Purity", date:"MM/DD/YYYY", lab:"Independent lab TODO", status:"Current", file:"COA PDF TODO" },
-  { product:"GHK-Cu", lot:"POW-XXXX", type:"Heavy metals", date:"MM/DD/YYYY", lab:"Independent lab TODO", status:"Current", file:"COA PDF TODO" },
-  { product:"BPC / TB-500", lot:"POW-XXXX", type:"Sterility", date:"MM/DD/YYYY", lab:"Independent lab TODO", status:"Current", file:"COA PDF TODO" },
-  { product:"SS-31", lot:"POW-XXXX", type:"Endotoxin", date:"MM/DD/YYYY", lab:"Independent lab TODO", status:"Archived", file:"COA PDF TODO" },
+  { product:"Reta GLP-3", lot:"DEMO-RETA-001", type:"Purity", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Current", file:"DEMO RECORD", verification:"POW-DEMO-RETA", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Purity","Mass"] },
+  { product:"GHK-Cu", lot:"DEMO-GHK-002", type:"Heavy metals", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Current", file:"DEMO RECORD", verification:"POW-DEMO-GHK", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Heavy metals","Mass"] },
+  { product:"BPC / TB-500", lot:"DEMO-BPC-003", type:"Sterility", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Current", file:"DEMO RECORD", verification:"POW-DEMO-BPC", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Sterility","Endotoxin"] },
+  { product:"SS-31", lot:"DEMO-SS31-004", type:"Endotoxin", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Archived", file:"DEMO RECORD", verification:"POW-DEMO-SS31", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Endotoxin","Mass"] },
 ];
 
 export const researchArticles = [

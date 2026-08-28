@@ -22,6 +22,10 @@ for (const [pathname, expected] of [
   ["/coa", "The proof behind"],
   ["/research", "Research sharper"],
   ["/subscribe", "Keep the"],
+  ["/cart", "Your research"],
+  ["/build-a-box", "Four heavy"],
+  ["/checkout", "Finish the"],
+  ["/track-order", "Track the"],
   ["/account", "Your lab"],
   ["/partner", "Command center"],
   ["/ops", "POW! ops"],
@@ -157,4 +161,30 @@ test("lets product story headings use the full page width", async () => {
   assert.match(css, /\.story-lead\{display:flex;flex-direction:column/);
   assert.match(css, /\.story-lead h2\{width:100%;max-width:none/);
   assert.doesNotMatch(css, /\.story-lead\{display:grid;grid-template-columns:\.8fr 1\.2fr/);
+});
+
+test("ships a connected, explicitly simulated commerce loop", async () => {
+  const product = (await (await render("/shop/reta-glp-3")).text()).replaceAll("<!-- -->", "");
+  const cart = (await (await render("/cart")).text()).replaceAll("<!-- -->", "");
+  const box = (await (await render("/build-a-box")).text()).replaceAll("<!-- -->", "");
+  const checkout = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
+  const tracking = (await (await render("/track-order")).text()).replaceAll("<!-- -->", "");
+  const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
+  assert.match(product, /2 VIALS 5% · 3–4 VIALS 10% · 5–9 VIALS 25% · 10\+ VIALS 40%/);
+  assert.match(cart, /Prices, discount tiers[\s\S]*not final POW terms/);
+  assert.match(box, /25% OFF[\s\S]*FREE WATER[\s\S]*FREE SHIPPING/);
+  assert.match(checkout, /cannot collect a payment or create a real order/);
+  assert.match(tracking, /POW-DEMO-1001/);
+  assert.match(source, /pow_demo_cart/);
+  assert.match(source, /addCartItem\(\{id:/);
+});
+
+test("labels all COA examples as demonstration data", async () => {
+  const coa = (await (await render("/coa")).text()).replaceAll("<!-- -->", "");
+  const data = await readFile(new URL("../app/pow-data.ts", import.meta.url), "utf8");
+  assert.match(coa, /DEMONSTRATION DATA — NOT A POW CERTIFICATE OR TEST RESULT/);
+  assert.match(coa, /POW-DEMO-RETA/);
+  assert.match(coa, /DEMO-RETA-001/);
+  assert.match(data, /Sample laboratory · not a POW result/);
+  assert.doesNotMatch(coa, /99\.\d+%/);
 });
