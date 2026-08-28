@@ -17,7 +17,7 @@ async function render(pathname = "/") {
 for (const [pathname, expected] of [
   ["/", "Purity with a"],
   ["/access?ref=test-partner", "Access the"],
-  ["/shop", "Power up your"],
+  ["/shop", "Shop the"],
   ["/shop/reta-glp-3", "Reta GLP-3"],
   ["/coa", "The proof behind"],
   ["/research", "Research sharper"],
@@ -58,6 +58,16 @@ test("renders the complete supplied catalog with exact strengths and prices", as
   for (const value of ["Reta GLP-3", "10 mg", "$80", "FOXO4-DRI", "$140", "Prime 191 GH", "24 IU", "Vilon", "20 mg", "$70"]) {
     assert.match(html, new RegExp(value.replace("$", "\\$")));
   }
+});
+
+test("frames the catalog as a shopping destination", async () => {
+  const response = await render("/shop");
+  const html = (await response.text()).replaceAll("<!-- -->", "");
+  assert.match(html, /Shop the[\s\S]*heavy hitters/);
+  assert.match(html, /START WITH A LANE/);
+  assert.match(html, /Browse all 38 products/);
+  assert.match(html, /href="\/shop\?category=Metabolic"/);
+  assert.doesNotMatch(html, /Power up your[\s\S]*research/i);
 });
 
 test("uses approved POW! artwork on product bottles", async () => {
