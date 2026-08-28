@@ -65,3 +65,14 @@ test("uses approved POW! artwork on product bottles", async () => {
   assert.match(html, /mini-vial-label/);
   assert.doesNotMatch(html, /class="mini-vial"><i><\/i><b>POW!<\/b>/);
 });
+
+test("renders a three-bottle hero and stylized product signals", async () => {
+  const home = await (await render("/" )).text();
+  const shop = await (await render("/shop")).text();
+  assert.equal((home.match(/hero-vial hero-vial--/g) || []).length, 3);
+  assert.match(home, /GHK-Cu/);
+  assert.match(home, /BPC \/ TB-500/);
+  assert.match(shop, /stock-signal available/);
+  assert.match(shop, /proof-signal verified/);
+  assert.doesNotMatch(shop, /week autoship/);
+});

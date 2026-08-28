@@ -60,3 +60,29 @@
 .product-art.large .mini-vial .mini-vial-base{right:30px;bottom:13px;left:30px;height:28px}
 .product-art.large .mini-vial::before{top:70px;bottom:35px;left:18px;width:23px}
 @media(max-width:520px){.mini-vial{width:108px;height:214px}.mini-vial .mini-vial-cap{width:121px;height:49px}.mini-vial .mini-vial-label{top:82px;min-height:86px}.mini-vial .bottle-mark{width:96px}.product-art.large .mini-vial{width:175px;height:340px}.product-art.large .mini-vial .mini-vial-cap{width:192px;height:72px}.product-art.large .mini-vial .mini-vial-label{top:126px;min-height:138px}.product-art.large .mini-vial .bottle-mark{width:154px}.product-art.large .mini-vial .mini-vial-label>small{font-size:12px}}
+
+/* Compact card signals replace the autoship sentence with useful scan data. */
+.card-signals{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:2px solid var(--ink)}
+.stock-signal,.proof-signal{display:inline-flex;align-items:center;min-height:30px;padding:6px 9px;border:2px solid var(--ink);font-size:9px;font-weight:950;letter-spacing:.06em;line-height:1;text-transform:uppercase}
+.stock-signal{gap:7px;color:white;background:var(--ink);box-shadow:3px 3px 0 var(--lime)}
+.stock-signal i{width:8px;height:8px;background:var(--lime);border-radius:50%;box-shadow:0 0 0 3px rgba(165,239,46,.18)}
+.stock-signal.unavailable i{background:var(--red);box-shadow:0 0 0 3px rgba(255,75,50,.18)}
+.proof-signal{background:var(--paper)}
+.proof-signal.verified{background:var(--lime)}
+
+/* Three-vial hero lineup: a lead bottle with two product companions. */
+.hero-vials{position:relative;z-index:2;width:min(610px,94%);height:470px}
+.hero-vial{position:absolute;margin:0}
+.hero-vial--main{z-index:3;top:54px;left:calc(50% - 95px)}
+.hero-vial--left,.hero-vial--right{z-index:1;top:138px;width:145px;height:278px;border-width:4px;border-radius:12px 12px 38px 38px;opacity:.94}
+.hero-vial--left{left:4%;animation:heroBottleLeft 6.2s ease-in-out infinite!important}
+.hero-vial--right{right:2%;animation:heroBottleRight 5.9s ease-in-out -1.4s infinite!important}
+.hero-vial--left .vial-cap,.hero-vial--right .vial-cap{width:calc(100% + 14px);height:58px;margin:-4px -7px 37px;border-width:4px}
+.hero-vial--left .vial-label,.hero-vial--right .vial-label{padding:8px 0 10px;border-block-width:3px}
+.hero-vial--left .vial-wordmark,.hero-vial--right .vial-wordmark{width:139px;margin-bottom:4px}
+.hero-vial--left .vial-label small,.hero-vial--right .vial-label small{font-size:9px}
+.hero-stage .burst,.hero-stage>p{z-index:6}
+@keyframes heroBottleLeft{0%,100%{transform:translate3d(0,0,0) rotate(-10deg) rotateY(6deg)}50%{transform:translate3d(0,-13px,18px) rotate(-6deg) rotateY(-5deg)}}
+@keyframes heroBottleRight{0%,100%{transform:translate3d(0,0,0) rotate(11deg) rotateY(-6deg)}50%{transform:translate3d(0,-16px,22px) rotate(7deg) rotateY(6deg)}}
+@media(max-width:900px){.hero-vials{width:min(520px,95%);height:440px}.hero-vial--main{top:55px}.hero-vial--left{left:3%}.hero-vial--right{right:3%}}
+@media(max-width:520px){.hero-vials{width:100%;height:410px}.hero-vial--main{top:68px;left:calc(50% - 80px)}.hero-vial--left,.hero-vial--right{top:150px;width:112px;height:224px}.hero-vial--left{left:1%}.hero-vial--right{right:1%}.hero-vial--left .vial-cap,.hero-vial--right .vial-cap{height:48px;margin-bottom:29px}.hero-vial--left .vial-wordmark,.hero-vial--right .vial-wordmark{width:108px}.hero-vial--left .vial-label small,.hero-vial--right .vial-label small{font-size:7px}.hero-stage .burst{top:4%;right:3%}}
