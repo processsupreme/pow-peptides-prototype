@@ -90,3 +90,18 @@ test("builds out the proof, research, and subscription journeys", async () => {
   assert.match(subscribe, /Base order total/);
   assert.match(subscribe, /\$80/);
 });
+
+test("renders a high-detail, evidence-bounded product record", async () => {
+  const reta = (await (await render("/shop/reta-glp-3")).text()).replaceAll("<!-- -->", "");
+  const water = (await (await render("/shop/bacteriostatic-water")).text()).replaceAll("<!-- -->", "");
+  assert.match(reta, /Inside the[\s\S]*research file/);
+  assert.match(reta, /Product specification/);
+  assert.match(reta, /\$8\.00 \/ mg/);
+  assert.match(reta, /COA snapshot/);
+  assert.match(reta, /Identity &amp; classification/);
+  assert.match(reta, /Safety &amp; regulatory/);
+  assert.match(reta, /pepguide\.net\/peptides\/retatrutide/);
+  assert.match(water, /Unit basis varies/);
+  assert.match(water, /pepguide\.net\/peptides\/bacteriostatic-water/);
+  assert.doesNotMatch(reta, /human dosing|recommended dose/i);
+});

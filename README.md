@@ -16,7 +16,7 @@ Open the local URL shown in the terminal. Use `npm run build` for the deployment
 - `/access` and `/verify` — research profile gate with form, OTP error/resend/success, Google prototype, returning-session marker, and referral preservation
 - `/` — merchandising homepage
 - `/shop` — complete 38-item searchable/filterable catalog with supplied strengths, prices, mobile filters, and empty state
-- `/shop/reta-glp-3` — product detail with purchase mode, cadence, quantity, progress, cart feedback, documents, and accordions
+- `/shop/reta-glp-3` — high-detail product record with purchase mode, cadence, quantity, cost basis, COA snapshot, research profile, handling/testing fields, external educational reference, cart feedback, and related products
 - `/categories/[slug]` — catalog category entry
 - `/coa` — searchable and filterable COA vault
 - `/research` and `/research/[slug]` — research library structure
@@ -33,6 +33,7 @@ Open the local URL shown in the terminal. Use `npm run build` for the deployment
 - Gate form, OTP error, resend, success, reset, and Google demonstration
 - Catalog search over names/aliases/categories, filters, name/newest/price sorting, clear, and empty state
 - Product one-time/subscription selection, 2/4/6-week cadence, 1/3/5/10 quantity, volume progress, cart feedback, and accordions
+- Product-specific PepGuide links are provided as independent educational references where an exact public profile was identified; external content is not treated as POW labeling or a substitute for approved science, specifications, or lot files
 - COA search, test-type/status filters, empty state, and file placeholder feedback
 - Customer skip, reschedule, cadence, quantity, pause/resume, cancel, reorder, and failed-payment states
 - Partner link copy/builder, masked customer list, ledger filters, payout history, and creative library
