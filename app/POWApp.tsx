@@ -1,9 +1,14 @@
 "use client";
 /* eslint-disable react-hooks/static-components, jsx-a11y/no-autofocus */
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { coaRecords, opsCards, products, researchArticles, type Product } from "./pow-data";
+
+// Keep every core route usable even when client-side hydration is delayed or unavailable.
+// Native anchors provide a reliable full-page navigation fallback in every browser.
+function Link({ children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
+  return <a {...props}>{children}</a>;
+}
 
 type View = "home"|"access"|"shop"|"product"|"coa"|"account"|"partner"|"ops"|"research"|"subscribe"|"partners"|"about"|"support";
 

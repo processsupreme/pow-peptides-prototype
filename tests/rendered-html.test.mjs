@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -77,6 +78,18 @@ test("renders a three-bottle hero and stylized product signals", async () => {
   assert.match(shop, /stock-signal available/);
   assert.match(shop, /proof-signal verified/);
   assert.doesNotMatch(shop, /week autoship/);
+});
+
+test("keeps primary navigation independent of client-side routing", async () => {
+  const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
+  const home = await (await render("/")).text();
+  assert.doesNotMatch(source, /from ["']next\/link["']/);
+  assert.match(source, /function Link\(\{ children, \.\.\.props \}: React\.AnchorHTMLAttributes/);
+  assert.match(home, /<a class="text-link" href="\/shop">View all compounds/);
+
+  for (const pathname of ["/shop", "/coa", "/research", "/partners", "/account", "/subscribe", "/support"]) {
+    assert.equal((await render(pathname)).status, 200, `${pathname} should be directly navigable`);
+  }
 });
 
 test("builds out the proof, research, and subscription journeys", async () => {
