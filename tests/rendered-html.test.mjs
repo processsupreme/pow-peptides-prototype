@@ -47,3 +47,10 @@ test("keeps unresolved business data explicit", async () => {
   assert.match(html, /POW-XXXX/);
   assert.doesNotMatch(html, /99(?:\.\d+)?%/);
 });
+
+test("uses approved POW! artwork on product bottles", async () => {
+  const response = await render("/shop");
+  const html = await response.text();
+  assert.match(html, /brand-assets\/svg\/pow-icon-impact\.svg/);
+  assert.doesNotMatch(html, /class="mini-vial"><i><\/i><b>POW!<\/b>/);
+});

@@ -44,7 +44,7 @@ function Footer() {
 }
 
 export function ProductArt({ product, number="01", large=false }: { product:Product; number?:string; large?:boolean }) {
-  return <div className={`product-art ${product.tone} ${large?"large":""}`} aria-label={`${product.name} product photography placeholder`}><span>{number}</span><div className="art-lines"/><div className="mini-vial"><i/><b>POW!</b><small>{product.name}<br/>{product.strength}</small></div></div>;
+  return <div className={`product-art ${product.tone} ${large?"large":""}`} aria-label={`${product.name} product photography placeholder`}><span>{number}</span><div className="art-lines"/><div className="mini-vial"><i/><img className="bottle-mark" src="/brand-assets/svg/pow-icon-impact.svg" alt=""/><small>{product.name}<br/>{product.strength}</small></div></div>;
 }
 
 function ProductCard({ product, index }: { product:Product; index:number }) {
@@ -58,7 +58,7 @@ function SectionTitle({ kicker, children, action }: { kicker:string; children:Re
 function HomeView() {
   const [faq,setFaq]=useState(0);
   return <main><Header/>
-    <section className="hero"><div className="hero-copy"><span className="impact-label">Research compounds that hit different</span><h1>Purity with a <em>punch.</em></h1><p>High-purity research compounds. Independently tested. Built to make an impact.</p><div className="hero-actions"><Link className="button primary" href="/shop">Shop POW! <span>↗</span></Link><Link className="button ghost" href="/coa">See the proof</Link></div></div><div className="hero-stage"><div className="speed-lines"/><div className="burst">New<br/>drop</div><div className="vial featured"><span className="vial-cap"/><span className="vial-label"><b>POW!</b><small>RETA GLP-3<br/>10 MG</small></span></div><p>LOT <strong>POW-XXXX</strong> · CURRENT COA</p></div></section>
+    <section className="hero"><div className="hero-copy"><span className="impact-label">Research compounds that hit different</span><h1>Purity with a <em>punch.</em></h1><p>High-purity research compounds. Independently tested. Built to make an impact.</p><div className="hero-actions"><Link className="button primary" href="/shop">Shop POW! <span>↗</span></Link><Link className="button ghost" href="/coa">See the proof</Link></div></div><div className="hero-stage"><div className="speed-lines"/><div className="burst">New<br/>drop</div><div className="vial featured"><span className="vial-cap"/><span className="vial-label"><img className="vial-wordmark" src="/brand-assets/svg/pow-logo-primary.svg" alt="POW! Peptides"/><small>RETA GLP-3<br/>10 MG</small></span></div><p>LOT <strong>POW-XXXX</strong> · CURRENT COA</p></div></section>
     <section className="trust-rail"><span><b>01</b> Lot-level documents</span><span><b>02</b> Independent testing</span><span><b>03</b> Clear research data</span><span><b>04</b> Account control</span></section>
     <section className="product-section"><SectionTitle kicker="THE CURRENT HEAVY HITTERS" action={<Link className="text-link" href="/shop">View all compounds →</Link>}>What&apos;s packing<br/>a punch?</SectionTitle><div className="product-grid">{products.slice(0,4).map((p,i)=><ProductCard key={p.slug} product={p} index={i}/>)}</div></section>
     <section className="category-section"><SectionTitle kicker="FIND YOUR LANE">Shop by research<br/>category.</SectionTitle><div className="category-grid">{["Metabolic","Recovery","Cognitive","Longevity","Cosmetic","Supplies"].map((x,i)=><Link href={`/shop?category=${x}`} key={x}><span>0{i+1}</span><b>{x}</b><em>Explore →</em></Link>)}</div></section>
