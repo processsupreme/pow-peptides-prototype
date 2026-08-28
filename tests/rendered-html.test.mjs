@@ -41,11 +41,20 @@ test("ships finished metadata and removes the starter marker", async () => {
 
 test("keeps unresolved business data explicit", async () => {
   const response = await render("/shop/reta-glp-3");
-  const html = await response.text();
-  assert.match(html, /\$—/);
+  const html = (await response.text()).replaceAll("<!-- -->", "");
+  assert.match(html, /\$80/);
   assert.match(html, /XX%/);
   assert.match(html, /POW-XXXX/);
   assert.doesNotMatch(html, /99(?:\.\d+)?%/);
+});
+
+test("renders the complete supplied catalog with exact strengths and prices", async () => {
+  const response = await render("/shop");
+  const html = (await response.text()).replaceAll("<!-- -->", "");
+  assert.match(html, />38<\/b> products/);
+  for (const value of ["Reta GLP-3", "10 mg", "$80", "FOXO4-DRI", "$140", "Prime 191 GH", "24 IU", "Vilon", "20 mg", "$70"]) {
+    assert.match(html, new RegExp(value.replace("$", "\\$")));
+  }
 });
 
 test("uses approved POW! artwork on product bottles", async () => {

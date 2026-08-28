@@ -15,7 +15,7 @@ Open the local URL shown in the terminal. Use `npm run build` for the deployment
 
 - `/access` and `/verify` — research profile gate with form, OTP error/resend/success, Google prototype, returning-session marker, and referral preservation
 - `/` — merchandising homepage
-- `/shop` — searchable/filterable catalog with mobile filters and empty state
+- `/shop` — complete 38-item searchable/filterable catalog with supplied strengths, prices, mobile filters, and empty state
 - `/shop/reta-glp-3` — product detail with purchase mode, cadence, quantity, progress, cart feedback, documents, and accordions
 - `/categories/[slug]` — catalog category entry
 - `/coa` — searchable and filterable COA vault
@@ -31,7 +31,7 @@ Open the local URL shown in the terminal. Use `npm run build` for the deployment
 - Mobile navigation and responsive layouts down to 320 px
 - Referral capture in local storage before mock verification
 - Gate form, OTP error, resend, success, reset, and Google demonstration
-- Catalog search over names/aliases/categories, filters, sort, clear, and empty state
+- Catalog search over names/aliases/categories, filters, name/newest/price sorting, clear, and empty state
 - Product one-time/subscription selection, 2/4/6-week cadence, 1/3/5/10 quantity, volume progress, cart feedback, and accordions
 - COA search, test-type/status filters, empty state, and file placeholder feedback
 - Customer skip, reschedule, cadence, quantity, pause/resume, cancel, reorder, and failed-payment states
@@ -50,9 +50,9 @@ Open the local URL shown in the terminal. Use `npm run build` for the deployment
 
 ## POW inputs still required
 
-- Final product names, aliases, categories, descriptions, strengths, units, and blend ratios
-- Classification of supplied inventory amounts; none are treated as retail prices
-- Retail prices, volume tiers, subscription discounts, and promotion rules
+- Final product descriptions, category review, aliases, and blend-ratio review
+- Final approval of the currently supplied catalog strengths and displayed prices
+- Volume tiers, subscription discounts, and promotion rules
 - Product and packaging photography
 - Current lots, approved COA/SDS files, labs, results, test dates, and publication rules
 - Shipping, handling, fulfillment, returns, and support promises
@@ -62,4 +62,4 @@ Open the local URL shown in the terminal. Use `npm run build` for the deployment
 - Roles, permissions, operational owners, and analytics requirements
 - Trademark and print-production specialist review of the approved identity
 
-All unresolved business values remain `$—`, `XX%`, `MM/DD/YYYY`, `POW-XXXX`, or explicitly labeled TODOs. No supplied inventory cost is exposed as a retail price, and no testing result or regulated claim is invented.
+Unresolved discount, date, lot, policy, and operational values remain `XX%`, `MM/DD/YYYY`, `POW-XXXX`, or explicitly labeled TODOs. The current catalog displays the exact strengths and prices supplied by POW; no testing result or regulated claim is invented.
