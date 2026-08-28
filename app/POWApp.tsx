@@ -44,7 +44,7 @@ function Footer() {
 }
 
 export function ProductArt({ product, number="01", large=false }: { product:Product; number?:string; large?:boolean }) {
-  return <div className={`product-art ${product.tone} ${large?"large":""}`} aria-label={`${product.name} product photography placeholder`}><span>{number}</span><div className="art-lines"/><div className="mini-vial"><i/><img className="bottle-mark" src="/brand-assets/svg/pow-icon-impact.svg" alt=""/><small>{product.name}<br/>{product.strength}</small></div></div>;
+  return <div className={`product-art ${product.tone} ${large?"large":""}`} aria-label={`${product.name} product photography placeholder`}><span>{number}</span><div className="art-lines"/><div className="mini-vial"><i className="mini-vial-cap"/><span className="mini-vial-label"><img className="bottle-mark" src="/brand-assets/svg/pow-logo-primary.svg" alt=""/><small>{product.name}<br/>{product.strength}</small></span><span className="mini-vial-base"/></div></div>;
 }
 
 function ProductCard({ product, index }: { product:Product; index:number }) {

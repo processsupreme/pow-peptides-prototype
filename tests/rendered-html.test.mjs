@@ -60,6 +60,8 @@ test("renders the complete supplied catalog with exact strengths and prices", as
 test("uses approved POW! artwork on product bottles", async () => {
   const response = await render("/shop");
   const html = await response.text();
-  assert.match(html, /brand-assets\/svg\/pow-icon-impact\.svg/);
+  assert.match(html, /brand-assets\/svg\/pow-logo-primary\.svg/);
+  assert.match(html, /mini-vial-cap/);
+  assert.match(html, /mini-vial-label/);
   assert.doesNotMatch(html, /class="mini-vial"><i><\/i><b>POW!<\/b>/);
 });
