@@ -19,6 +19,8 @@ for (const [pathname, expected] of [
   ["/shop", "Power up your"],
   ["/shop/reta-glp-3", "Reta GLP-3"],
   ["/coa", "The proof behind"],
+  ["/research", "Research sharper"],
+  ["/subscribe", "Keep the"],
   ["/account", "Your lab"],
   ["/partner", "Command center"],
   ["/ops", "POW! ops"],
@@ -75,4 +77,16 @@ test("renders a three-bottle hero and stylized product signals", async () => {
   assert.match(shop, /stock-signal available/);
   assert.match(shop, /proof-signal verified/);
   assert.doesNotMatch(shop, /week autoship/);
+});
+
+test("builds out the proof, research, and subscription journeys", async () => {
+  const coa = await (await render("/coa")).text();
+  const research = await (await render("/research")).text();
+  const subscribe = (await (await render("/subscribe")).text()).replaceAll("<!-- -->", "");
+  assert.match(coa, /PRODUCT[\s\S]*LOT[\s\S]*TEST[\s\S]*FILE/);
+  assert.match(research, /Featured guide/);
+  assert.match(research, /Research essentials/);
+  assert.match(subscribe, /BUILD A PROTOTYPE PLAN/);
+  assert.match(subscribe, /Base order total/);
+  assert.match(subscribe, /\$80/);
 });
