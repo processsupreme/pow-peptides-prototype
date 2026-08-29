@@ -26,7 +26,7 @@ for (const [pathname, expected] of [
   ["/build-a-box", "Four heavy"],
   ["/checkout", "Finish the"],
   ["/track-order", "Track the"],
-  ["/compare", "Line them up"],
+  ["/compare", "Two products"],
   ["/bulk", "More vials"],
   ["/rewards", "Every order"],
   ["/guarantee", "Proof before"],
@@ -200,8 +200,10 @@ test("builds the comparison, bulk, rewards, and guarantee journeys", async () =>
   const guarantee = (await (await render("/guarantee")).text()).replaceAll("<!-- -->", "");
   const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
 
-  assert.match(compare, /Supplied strength[\s\S]*Base price[\s\S]*Lot documentation/);
-  assert.match(compare, /not scientific or medical guidance/);
+  assert.match(compare, /Product one[\s\S]*Product two/);
+  assert.match(compare, /Strength[\s\S]*Base price[\s\S]*COA status/);
+  assert.match(compare, /no giant product checklist and no hidden horizontal table/);
+  assert.match(compare, /does not rank compounds or provide scientific or medical guidance/);
   assert.match(bulk, /10–49 VIALS[\s\S]*50\+ VIALS/);
   assert.match(bulk, /ADULT SIGNATURE[\s\S]*LOT-MATCHED DOCUMENTS/);
   assert.match(rewards, /Member[\s\S]*Insider[\s\S]*VIP[\s\S]*Founder/);
