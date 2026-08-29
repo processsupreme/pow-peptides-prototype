@@ -24,6 +24,7 @@ for (const [pathname, expected] of [
   ["/research/reading-a-certificate", "How to read a certificate"],
   ["/research/lot-traceability", "Why lot traceability matters"],
   ["/research/handling-basics", "coming soon"],
+  ["/partners", "Build trust"],
   ["/subscribe", "Keep the"],
   ["/cart", "Your research"],
   ["/build-a-box", "Four heavy"],
@@ -244,4 +245,17 @@ test("builds the comparison, bulk, rewards, and guarantee journeys", async () =>
   assert.match(source, /pow_demo_saved/);
   assert.match(source, /pow_recently_viewed/);
   assert.match(source, /concierge-launcher/);
+});
+
+test("turns the partner network into a complete recruitment and onboarding journey", async () => {
+  const partners = (await (await render("/partners")).text()).replaceAll("<!-- -->", "");
+  assert.match(partners, /Build trust[\s\S]*Get credit/);
+  assert.match(partners, /Apply[\s\S]*Get approved[\s\S]*Create your link[\s\S]*Share it[\s\S]*Track the sale/);
+  assert.match(partners, /BUILD YOUR FIRST LINK/);
+  assert.match(partners, /Email your list[\s\S]*Text opted-in customers[\s\S]*Post approved creative/);
+  assert.match(partners, /CLICK → CUSTOMER → ORDER → COMMISSION/);
+  assert.match(partners, /Start your partner[\s\S]*application/);
+  assert.match(partners, /Open the command center/);
+  assert.match(partners, /Attribution window, commission rates, eligible sales, payout timing/);
+  assert.match(partners, /Only contact people who have opted in/);
 });
