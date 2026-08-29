@@ -21,6 +21,9 @@ for (const [pathname, expected] of [
   ["/shop/reta-glp-3", "Reta GLP-3"],
   ["/coa", "The proof behind"],
   ["/research", "Research sharper"],
+  ["/research/reading-a-certificate", "How to read a certificate"],
+  ["/research/lot-traceability", "Why lot traceability matters"],
+  ["/research/handling-basics", "coming soon"],
   ["/subscribe", "Keep the"],
   ["/cart", "Your research"],
   ["/build-a-box", "Four heavy"],
@@ -125,9 +128,32 @@ test("builds out the proof, research, and subscription journeys", async () => {
   assert.match(coa, /PRODUCT[\s\S]*LOT[\s\S]*TEST[\s\S]*FILE/);
   assert.match(research, /Featured guide/);
   assert.match(research, /Research essentials/);
+  assert.match(research, /Read guide →/);
+  assert.match(research, /Article coming soon →/);
   assert.match(subscribe, /BUILD A PROTOTYPE PLAN/);
   assert.match(subscribe, /Base order total/);
   assert.match(subscribe, /\$80/);
+});
+
+test("publishes complete research guides and honest coming-soon states", async () => {
+  const certificate = (await (await render("/research/reading-a-certificate")).text()).replaceAll("<!-- -->", "");
+  const traceability = (await (await render("/research/lot-traceability")).text()).replaceAll("<!-- -->", "");
+  const handling = (await (await render("/research/handling-basics")).text()).replaceAll("<!-- -->", "");
+
+  assert.match(certificate, /LOT → TEST → RESULT → SPEC → REVIEW/);
+  assert.match(certificate, /Separate the result from the specification/);
+  assert.match(certificate, /Fast review checklist/);
+  assert.match(certificate, /fda\.gov/);
+  assert.doesNotMatch(certificate, /Know more[\s\S]*Research sharper/);
+
+  assert.match(traceability, /VIAL → INVENTORY → TEST → ORDER → SHIPMENT/);
+  assert.match(traceability, /Exceptions need their own status/);
+  assert.match(traceability, /Give the customer a simple proof path/);
+
+  assert.match(handling, /Article[\s\S]*coming soon/);
+  assert.match(handling, /We(?:&#x27;|’)re not filling operational gaps with generic instructions/);
+  assert.match(handling, /Approved storage ranges/);
+  assert.match(handling, /Quality and legal approval/);
 });
 
 test("renders a high-detail, evidence-bounded product record", async () => {

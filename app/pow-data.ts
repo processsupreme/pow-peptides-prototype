@@ -62,9 +62,9 @@ export const coaRecords = [
 ];
 
 export const researchArticles = [
-  { slug:"reading-a-certificate", kicker:"Testing 101", title:"How to read a certificate of analysis", summary:"A plain-language guide to lots, test types, attached files, and document status." },
-  { slug:"handling-basics", kicker:"Lab handling", title:"Research handling basics", summary:"A placeholder overview awaiting POW-approved storage and handling instructions." },
-  { slug:"lot-traceability", kicker:"Quality system", title:"Why lot traceability matters", summary:"How product records and testing documents stay connected in the prototype." },
+  { slug:"reading-a-certificate", kicker:"Testing 101", title:"How to read a certificate of analysis", summary:"A plain-language guide to lots, test methods, results, specifications, and document status.", status:"published" as const, readTime:"7 min read" },
+  { slug:"handling-basics", kicker:"Lab handling", title:"Research handling basics", summary:"Storage, receipt, preparation, and handling guidance awaiting POW quality and legal approval.", status:"coming-soon" as const, readTime:"Coming soon" },
+  { slug:"lot-traceability", kicker:"Quality system", title:"Why lot traceability matters", summary:"How a vial, test sample, certificate, inventory record, and order stay connected.", status:"published" as const, readTime:"6 min read" },
 ];
 
 export const opsCards = [
