@@ -28,7 +28,7 @@ for (const [pathname, expected] of [
   ["/track-order", "Track the"],
   ["/compare", "Two products"],
   ["/bulk", "More vials"],
-  ["/rewards", "Every order"],
+  ["/rewards", "Shop. Earn"],
   ["/guarantee", "Proof before"],
   ["/account", "Your lab"],
   ["/partner", "Command center"],
@@ -206,9 +206,13 @@ test("builds the comparison, bulk, rewards, and guarantee journeys", async () =>
   assert.match(compare, /does not rank compounds or provide scientific or medical guidance/);
   assert.match(bulk, /10–49 VIALS[\s\S]*50\+ VIALS/);
   assert.match(bulk, /ADULT SIGNATURE[\s\S]*LOT-MATCHED DOCUMENTS/);
-  assert.match(rewards, /Member[\s\S]*Insider[\s\S]*VIP[\s\S]*Founder/);
-  assert.match(rewards, /100 = \$1/);
-  assert.match(rewards, /client demo/);
+  assert.match(rewards, /always free/);
+  assert.match(rewards, /Join free/);
+  assert.match(rewards, /1 PT \/ \$1/);
+  assert.match(rewards, /\$5 off[\s\S]*500 points/);
+  assert.match(rewards, /Member[\s\S]*Plus[\s\S]*Premier/);
+  assert.match(rewards, /STATUS IS EARNED—NEVER PURCHASED/);
+  assert.doesNotMatch(rewards, /\$99\.99|per month|Choose Founder/);
   assert.match(guarantee, /proposed framework/);
   assert.match(guarantee, /Independent testing[\s\S]*Lot-specific proof[\s\S]*Protected fulfillment[\s\S]*Human support/);
   assert.match(source, /pow_demo_saved/);
