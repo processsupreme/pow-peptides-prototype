@@ -32,6 +32,7 @@ Use `npm ci` when dependencies are missing or a clean lockfile install is needed
 | --- | --- |
 | `npm run dev` | Vinext/Vite development with Cloudflare local runtime |
 | `npm run lint` | ESLint across source, excluding build output |
+| `npm run typecheck` | Generate Next.js route types, then check TypeScript without emitting build or incremental cache output; supports Vercel's required TypeCheck |
 | `npm test` | Runs the Vinext build, then Node's rendered-HTML suite |
 | `npm run build` | Vinext/Sites Worker build in `dist/` |
 | `npm run vercel-build` | Native `next build` in `.next/`; configured Vercel production build command |
@@ -48,7 +49,7 @@ git diff --check
 git status --short
 ```
 
-No separate typecheck script exists. The successful Next.js production build includes TypeScript validation. `tsconfig.json` covers the app and Next configuration; it excludes the Worker/database/Vite sources. The existing tests import `dist/server/index.js`, call the Worker with a stub asset binding, and assert HTML and selected source content. They do not exercise browser hydration, clicking, persistence, OAuth, payments, or real services.
+The baseline had no separate typecheck script. During the subsequently authorized deployment, `npm run typecheck` was added because Vercel skipped its required TypeCheck without it. The Next.js production build also includes TypeScript validation. `tsconfig.json` covers the app and Next configuration; it excludes the Worker/database/Vite sources. The existing tests import `dist/server/index.js`, call the Worker with a stub asset binding, and assert HTML and selected source content. They do not exercise browser hydration, clicking, persistence, OAuth, payments, or real services.
 
 ## Baseline results and setup notes
 
@@ -65,6 +66,8 @@ No separate typecheck script exists. The successful Next.js production build inc
 ## Hosting and push restriction
 
 Current phase clarification (September 8, 2026): this is an interactive product specification. Resolving Mini-only push/delivery configuration is deferred until closer to launch and is not a prerequisite for continued local prototype work. Production authentication, payments, recurring billing, and affiliate integrations are also deferred. Continue demonstrating these experiences with synthetic data; keep future integration requirements documented. This deferral does not itself authorize a push, remote build, or deployment.
+
+Subsequent authorization (September 8, 2026): the user explicitly requested “push and deploy everything.” The completed feature branch was pushed to the existing GitHub repository and triggered a Vercel preview build. Remote Vercel builds and production promotion for this release are authorized; the earlier baseline hold is historical. Keep the existing site identity and required checks. This release does not require merging into `main`.
 
 `vercel.json` preserves framework `nextjs` and `npm run vercel-build`. `.openai/hosting.json` preserves the existing Sites project ID with D1 and R2 disabled. The Worker/Vinext build path also remains intact. Do not initialize a replacement hosting project or change domains.
 
