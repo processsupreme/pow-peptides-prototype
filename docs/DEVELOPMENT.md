@@ -64,6 +64,8 @@ No separate typecheck script exists. The successful Next.js production build inc
 
 ## Hosting and push restriction
 
+Current phase clarification (September 8, 2026): this is an interactive product specification. Resolving Mini-only push/delivery configuration is deferred until closer to launch and is not a prerequisite for continued local prototype work. Production authentication, payments, recurring billing, and affiliate integrations are also deferred. Continue demonstrating these experiences with synthetic data; keep future integration requirements documented. This deferral does not itself authorize a push, remote build, or deployment.
+
 `vercel.json` preserves framework `nextjs` and `npm run vercel-build`. `.openai/hosting.json` preserves the existing Sites project ID with D1 and R2 disabled. The Worker/Vinext build path also remains intact. Do not initialize a replacement hosting project or change domains.
 
 Read-only GitHub inspection found no Actions workflows, repository webhooks, check runs or commit statuses for remote `main`, or deployments in the queried recent deployment list. That does **not** establish that GitHub App integrations or Vercel automatic deployments are disabled. No local Vercel CLI/project linkage was available for verifying the project-side Git settings. Vercel documents automatic preview deployments on branch pushes: [Git deployment documentation](https://vercel.com/docs/git), checked September 8, 2026.
