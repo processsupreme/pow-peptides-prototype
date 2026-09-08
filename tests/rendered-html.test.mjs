@@ -175,13 +175,15 @@ test("renders a high-detail, evidence-bounded product record", async () => {
   assert.doesNotMatch(reta, /human dosing|recommended dose/i);
 });
 
-test("offers scalable strength variants without empty gallery controls", async () => {
+test("offers only supplied strength variants with exact prices and stock counts", async () => {
   const response = await render("/shop/reta-glp-3");
   const html = (await response.text()).replaceAll("<!-- -->", "");
   const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
   assert.match(html, /Select strength/);
-  for (const strength of ["10 mg", "20 mg", "30 mg"]) assert.match(html, new RegExp(`>${strength}<`));
-  assert.match(html, /pricing scales proportionally/);
+  for (const strength of ["10 mg", "20 mg"]) assert.match(html, new RegExp(`>${strength}<`));
+  assert.match(html, /20 mg, \$105 per vial, 300 vials in supplied inventory/);
+  assert.match(html, /1,200 vials/);
+  assert.doesNotMatch(html, />30 mg<|pricing scales proportionally/);
   assert.doesNotMatch(html, /aria-label="(?:Front|Detail|Label|Lot) view"/);
   assert.doesNotMatch(source, /className="thumbs"/);
   assert.doesNotMatch(source, /className="reference-card"/);
@@ -201,9 +203,12 @@ test("ships a connected, explicitly simulated commerce loop", async () => {
   const checkout = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
   const tracking = (await (await render("/track-order")).text()).replaceAll("<!-- -->", "");
   const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
-  assert.match(product, /2 VIALS 5% · 3–4 VIALS 10% · 5–9 VIALS 25% · 10\+ VIALS 40%/);
-  assert.match(cart, /Prices, discount tiers[\s\S]*not final POW terms/);
-  assert.match(box, /25% OFF[\s\S]*FREE WATER[\s\S]*FREE SHIPPING/);
+  assert.match(product, /POW SUPPLIED PRICING/);
+  assert.doesNotMatch(product, /VIALS 5%|VIALS 40%/);
+  assert.match(cart, /Product prices match POW/);
+  assert.doesNotMatch(cart, /Volume savings|volume tier applied/);
+  assert.match(box, /SUPPLIED PRICES/);
+  assert.doesNotMatch(box, /25% OFF|FREE WATER|free water/);
   assert.match(checkout, /cannot collect a payment or create a real order/);
   assert.match(tracking, /POW-DEMO-1001/);
   assert.match(source, /pow_demo_cart/);
@@ -231,7 +236,8 @@ test("builds the comparison, bulk, rewards, and guarantee journeys", async () =>
   assert.match(compare, /Strength[\s\S]*Base price[\s\S]*COA status/);
   assert.match(compare, /no giant product checklist and no hidden horizontal table/);
   assert.match(compare, /does not rank compounds or provide scientific or medical guidance/);
-  assert.match(bulk, /10–49 VIALS[\s\S]*50\+ VIALS/);
+  assert.match(bulk, /No bulk discount is applied/);
+  assert.doesNotMatch(bulk, /40%|50%/);
   assert.match(bulk, /ADULT SIGNATURE[\s\S]*LOT-MATCHED DOCUMENTS/);
   assert.match(rewards, /always free/);
   assert.match(rewards, /Join free/);
@@ -258,4 +264,51 @@ test("turns the partner network into a complete recruitment and onboarding journ
   assert.match(partners, /Open the command center/);
   assert.match(partners, /Attribution window, commission rates, eligible sales, payout timing/);
   assert.match(partners, /Only contact people who have opted in/);
+});
+
+// Independently transcribed from the supplied document: strength, dollars per vial, vial count.
+const suppliedInventory = {
+  "reta-glp-3": [["10 mg",80,1200],["20 mg",105,300]],
+  "ghk-cu": [["100 mg",50,1200]], "bpc-tb-500": [["20 mg",90,400]],
+  "bacteriostatic-water": [["10 mL",20,1200]], "tesamorelin": [["10 mg",90,500]],
+  "snap-8": [["10 mg",60,400]], "nad-mots-c-5-amino-1mq": [["120 mg",70,400]],
+  "ss-31": [["10 mg",50,500]], "vitamin-b12": [["10 mg",55,400]],
+  "cartalax": [["20 mg",70,500]], "epitalon": [["10 mg",50,1200]],
+  "foxo4-dri": [["10 mg",140,500]], "igf-1-lr3": [["1 mg",80,500]],
+  "klow": [["80 mg",85,400]], "klow-pro": [["80 mg",130,250]],
+  "melanotan-ii": [["10 mg",45,500]], "nad-plus": [["1000 mcg",55,500]],
+  "oxytocin": [["10 mg",50,500]], "pt-141": [["10 mg",50,500]],
+  "selank-semax": [["20 mg",66,500]], "selank": [["10 mg",44,250]],
+  "semax": [["10 mg",44,250]], "sermorelin": [["10 mg",60,250]],
+  "tesamorelin-ipamorelin": [["16 mg total",99,500]], "testagen": [["20 mg",66,250]],
+  "thymosin-alpha-1": [["10 mg",66,250]], "vesugen": [["20 mg",66,250]],
+  "vip": [["10 mg",66,250]], "kisspeptin-10": [["10 mg",55,500]],
+  "ipamorelin": [["10 mg",33,250]], "cortexin": [["20 mg",70,250]],
+  "chonluten": [["20 mg",60,250]], "dsip": [["10 mg",45,250]],
+  "mots-c": [["10 mg",35,500]], "aod-9604": [["5 mg",55,500]],
+  "cjc-1295-ipamorelin": [["10 mg",55,500]], "prime-191-gh": [["24 IU",80,1200]],
+  "vilon": [["20 mg",70,250]],
+};
+
+test("matches every supplied variant, price and stock count without inventing inventory", async () => {
+  const { products: inventory } = JSON.parse(await readFile(new URL("../app/pow-inventory.json", import.meta.url), "utf8"));
+  const actual = Object.fromEntries(Object.entries(inventory).map(([slug, variants]) => [slug, variants.map(v => [v.strength,v.price,v.stockCount])]));
+  assert.deepEqual(actual, suppliedInventory);
+  const variants = Object.values(inventory).flat();
+  assert.equal(variants.length, 39);
+  assert.equal(new Set(variants.map(v => v.id)).size, 39);
+  assert.equal(variants.reduce((sum, v) => sum + v.stockCount, 0), 19050);
+});
+
+test("renders the supplied default strength, price and count on every product page", async () => {
+  for (const [slug, variants] of Object.entries(suppliedInventory)) {
+    const html = (await (await render("/shop/" + slug)).text()).replaceAll("<!-- -->", "");
+    const [strength, price, count] = variants[0];
+    assert.ok(html.includes(strength), slug + " strength");
+    assert.ok(html.includes("$" + price), slug + " price");
+    assert.ok(html.includes(count.toLocaleString("en-US") + " vials"), slug + " stock");
+    if (variants.length === 1) assert.doesNotMatch(html, /class="strength-options"/, slug + " must not invent strengths");
+  }
+  const blend = (await (await render("/shop/tesamorelin-ipamorelin")).text()).replaceAll("<!-- -->", "");
+  assert.match(blend, /Tesamorelin 13 mg \/ Ipamorelin 3 mg/);
 });

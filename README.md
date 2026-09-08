@@ -2,6 +2,8 @@
 
 An accessible, responsive front-end prototype built from the August 28, 2026 POW! wireframe handoff. It uses local mock state only and intentionally does not connect production commerce or identity services.
 
+Product strengths, per-vial prices, and stock counts now use POW's September 8 supplied inventory, confirmed by the user as the source of truth. The catalog contains 38 product families and 39 stocked variants (19,050 vials). See [inventory maintenance](docs/INVENTORY.md). Placeholder strength generation and automatic merchandise discounts have been removed; checkout, fulfillment, and shipping remain demonstrations.
+
 ## Run locally
 
 ```bash
@@ -54,7 +56,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 ## POW inputs still required
 
 - Final product descriptions, category review, aliases, and blend-ratio review
-- Final approval of the currently supplied catalog strengths and displayed prices
+- Future updates to the confirmed inventory strengths, per-vial prices, and stock snapshot
 - Volume tiers, subscription discounts, and promotion rules
 - Product and packaging photography
 - Current lots, approved COA/SDS files, labs, results, test dates, and publication rules

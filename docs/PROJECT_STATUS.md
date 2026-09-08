@@ -1,5 +1,13 @@
 # Project status and roadmap
 
+## Inventory update September 8 2026
+
+The user confirmed POW's supplied inventory as the authority for strengths, per-vial prices, and stock counts. `app/pow-inventory.json` now contains 39 explicit variants across 38 product families and 19,050 vials. Reta GLP-3 20 mg is $105 with 300 vials; 10 mg is $80 with 1,200 vials. Variant selection uses these records instead of generated strengths and proportional pricing. Product stock counts aggregate variants; detail pages show the selected strength's count. The supplied Tesamorelin / Ipamorelin 13 mg / 3 mg composition is recorded.
+
+Automatic demo volume/bulk/bundle discounts and the unapproved free-water gift were removed so merchandise totals use supplied prices. A new local demo-cart key prevents old generated variants and placeholder prices from carrying into the updated checkout. Existing saved-product preferences are unaffected. Inventory counts remain a supplied snapshot; demo checkout does not reserve or decrement them. See `INVENTORY.md` for maintenance and limits.
+
+The assessment below describes the earlier baseline. References below to generated strengths, scaled pricing, missing stock counts, and applied demo discounts are superseded by this update.
+
 Assessed September 8, 2026, against source commit `6af4d12`. This pass documents and verifies the existing implementation; it adds no integrations or redesign. The approved identity is modern, bold superhero POW!, with an electric-lime exclamation point and black/white/lime styling. Preserve `public/brand-assets` and its asset guide, including its existing background guidance.
 
 ## Architecture

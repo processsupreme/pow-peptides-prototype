@@ -1,0 +1,317 @@
+{
+  "source": "POW supplied inventory, confirmed as source of truth September 8, 2026",
+  "snapshotDate": "2026-09-08",
+  "products": {
+    "reta-glp-3": [
+      {
+        "id": "reta-glp-3-10-mg",
+        "strength": "10 mg",
+        "price": 80,
+        "stockCount": 1200
+      },
+      {
+        "id": "reta-glp-3-20-mg",
+        "strength": "20 mg",
+        "price": 105,
+        "stockCount": 300
+      }
+    ],
+    "ghk-cu": [
+      {
+        "id": "ghk-cu-100-mg",
+        "strength": "100 mg",
+        "price": 50,
+        "stockCount": 1200
+      }
+    ],
+    "bpc-tb-500": [
+      {
+        "id": "bpc-tb-500-20-mg",
+        "strength": "20 mg",
+        "price": 90,
+        "stockCount": 400
+      }
+    ],
+    "bacteriostatic-water": [
+      {
+        "id": "bacteriostatic-water-10-ml",
+        "strength": "10 mL",
+        "price": 20,
+        "stockCount": 1200
+      }
+    ],
+    "tesamorelin": [
+      {
+        "id": "tesamorelin-10-mg",
+        "strength": "10 mg",
+        "price": 90,
+        "stockCount": 500
+      }
+    ],
+    "snap-8": [
+      {
+        "id": "snap-8-10-mg",
+        "strength": "10 mg",
+        "price": 60,
+        "stockCount": 400
+      }
+    ],
+    "nad-mots-c-5-amino-1mq": [
+      {
+        "id": "nad-mots-c-5-amino-1mq-120-mg",
+        "strength": "120 mg",
+        "price": 70,
+        "stockCount": 400
+      }
+    ],
+    "ss-31": [
+      {
+        "id": "ss-31-10-mg",
+        "strength": "10 mg",
+        "price": 50,
+        "stockCount": 500
+      }
+    ],
+    "vitamin-b12": [
+      {
+        "id": "vitamin-b12-10-mg",
+        "strength": "10 mg",
+        "price": 55,
+        "stockCount": 400
+      }
+    ],
+    "cartalax": [
+      {
+        "id": "cartalax-20-mg",
+        "strength": "20 mg",
+        "price": 70,
+        "stockCount": 500
+      }
+    ],
+    "epitalon": [
+      {
+        "id": "epitalon-10-mg",
+        "strength": "10 mg",
+        "price": 50,
+        "stockCount": 1200
+      }
+    ],
+    "foxo4-dri": [
+      {
+        "id": "foxo4-dri-10-mg",
+        "strength": "10 mg",
+        "price": 140,
+        "stockCount": 500
+      }
+    ],
+    "igf-1-lr3": [
+      {
+        "id": "igf-1-lr3-1-mg",
+        "strength": "1 mg",
+        "price": 80,
+        "stockCount": 500
+      }
+    ],
+    "klow": [
+      {
+        "id": "klow-80-mg",
+        "strength": "80 mg",
+        "price": 85,
+        "stockCount": 400
+      }
+    ],
+    "klow-pro": [
+      {
+        "id": "klow-pro-80-mg",
+        "strength": "80 mg",
+        "price": 130,
+        "stockCount": 250
+      }
+    ],
+    "melanotan-ii": [
+      {
+        "id": "melanotan-ii-10-mg",
+        "strength": "10 mg",
+        "price": 45,
+        "stockCount": 500
+      }
+    ],
+    "nad-plus": [
+      {
+        "id": "nad-plus-1000-mcg",
+        "strength": "1000 mcg",
+        "price": 55,
+        "stockCount": 500
+      }
+    ],
+    "oxytocin": [
+      {
+        "id": "oxytocin-10-mg",
+        "strength": "10 mg",
+        "price": 50,
+        "stockCount": 500
+      }
+    ],
+    "pt-141": [
+      {
+        "id": "pt-141-10-mg",
+        "strength": "10 mg",
+        "price": 50,
+        "stockCount": 500
+      }
+    ],
+    "selank-semax": [
+      {
+        "id": "selank-semax-20-mg",
+        "strength": "20 mg",
+        "price": 66,
+        "stockCount": 500
+      }
+    ],
+    "selank": [
+      {
+        "id": "selank-10-mg",
+        "strength": "10 mg",
+        "price": 44,
+        "stockCount": 250
+      }
+    ],
+    "semax": [
+      {
+        "id": "semax-10-mg",
+        "strength": "10 mg",
+        "price": 44,
+        "stockCount": 250
+      }
+    ],
+    "sermorelin": [
+      {
+        "id": "sermorelin-10-mg",
+        "strength": "10 mg",
+        "price": 60,
+        "stockCount": 250
+      }
+    ],
+    "tesamorelin-ipamorelin": [
+      {
+        "id": "tesamorelin-ipamorelin-16-mg",
+        "strength": "16 mg total",
+        "price": 99,
+        "stockCount": 500,
+        "components": "Tesamorelin 13 mg / Ipamorelin 3 mg"
+      }
+    ],
+    "testagen": [
+      {
+        "id": "testagen-20-mg",
+        "strength": "20 mg",
+        "price": 66,
+        "stockCount": 250
+      }
+    ],
+    "thymosin-alpha-1": [
+      {
+        "id": "thymosin-alpha-1-10-mg",
+        "strength": "10 mg",
+        "price": 66,
+        "stockCount": 250
+      }
+    ],
+    "vesugen": [
+      {
+        "id": "vesugen-20-mg",
+        "strength": "20 mg",
+        "price": 66,
+        "stockCount": 250
+      }
+    ],
+    "vip": [
+      {
+        "id": "vip-10-mg",
+        "strength": "10 mg",
+        "price": 66,
+        "stockCount": 250
+      }
+    ],
+    "kisspeptin-10": [
+      {
+        "id": "kisspeptin-10-10-mg",
+        "strength": "10 mg",
+        "price": 55,
+        "stockCount": 500
+      }
+    ],
+    "ipamorelin": [
+      {
+        "id": "ipamorelin-10-mg",
+        "strength": "10 mg",
+        "price": 33,
+        "stockCount": 250
+      }
+    ],
+    "cortexin": [
+      {
+        "id": "cortexin-20-mg",
+        "strength": "20 mg",
+        "price": 70,
+        "stockCount": 250
+      }
+    ],
+    "chonluten": [
+      {
+        "id": "chonluten-20-mg",
+        "strength": "20 mg",
+        "price": 60,
+        "stockCount": 250
+      }
+    ],
+    "dsip": [
+      {
+        "id": "dsip-10-mg",
+        "strength": "10 mg",
+        "price": 45,
+        "stockCount": 250
+      }
+    ],
+    "mots-c": [
+      {
+        "id": "mots-c-10-mg",
+        "strength": "10 mg",
+        "price": 35,
+        "stockCount": 500
+      }
+    ],
+    "aod-9604": [
+      {
+        "id": "aod-9604-5-mg",
+        "strength": "5 mg",
+        "price": 55,
+        "stockCount": 500
+      }
+    ],
+    "cjc-1295-ipamorelin": [
+      {
+        "id": "cjc-1295-ipamorelin-10-mg",
+        "strength": "10 mg",
+        "price": 55,
+        "stockCount": 500
+      }
+    ],
+    "prime-191-gh": [
+      {
+        "id": "prime-191-gh-24-iu",
+        "strength": "24 IU",
+        "price": 80,
+        "stockCount": 1200
+      }
+    ],
+    "vilon": [
+      {
+        "id": "vilon-20-mg",
+        "strength": "20 mg",
+        "price": 70,
+        "stockCount": 250
+      }
+    ]
+  }
+}
