@@ -5,11 +5,13 @@ An accessible, responsive front-end prototype built from the August 28, 2026 POW
 ## Run locally
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
 Open the local URL shown in the terminal. Use `npm run build` for the deployment build.
+
+All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-peptides`; the MacBook Pro remotely operates the Mini. See [development workflow](docs/DEVELOPMENT.md) for the two build paths (`npm run build` for Sites and `npm run vercel-build` for Vercel), local checks, and the push restriction. See [project status and roadmap](docs/PROJECT_STATUS.md) for the current behavior, known gaps, and priorities.
 
 ## Core routes
 
