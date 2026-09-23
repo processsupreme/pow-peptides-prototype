@@ -1,5 +1,9 @@
 # Project status and roadmap
 
+## Venmo preview September 22 2026
+
+Checkout now presents Venmo as the only payment option, with sample contact details, a labeled simulated approval dialog, cancel/failure recovery, and a no-charge confirmation. All payment behavior remains local. The old static card token is removed. Business details, catalog eligibility/provider approval, and the live checkout/order integration remain outstanding; entering a Venmo username cannot activate payments. See [Venmo preview and walkthrough](VENMO_PREVIEW.md). Inventory, prices, hosting identity, and dependencies are unchanged.
+
 ## Inventory update September 8 2026
 
 The user confirmed POW's supplied inventory as the authority for strengths, per-vial prices, and stock counts. `app/pow-inventory.json` now contains 39 explicit variants across 38 product families and 19,050 vials. Reta GLP-3 20 mg is $105 with 300 vials; 10 mg is $80 with 1,200 vials. Variant selection uses these records instead of generated strengths and proportional pricing. Product stock counts aggregate variants; detail pages show the selected strength's count. The supplied Tesamorelin / Ipamorelin 13 mg / 3 mg composition is recorded.

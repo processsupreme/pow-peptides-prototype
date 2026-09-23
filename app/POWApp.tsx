@@ -311,9 +311,59 @@ function BundleView(){
 }
 
 function CheckoutView(){
-  const cart=useDemoCart(); const [ack,setAck]=useState(false); const [age,setAge]=useState(false); const [placed,setPlaced]=useState(false); const merchandise=cart.items.reduce((n,x)=>n+itemTotal(x),0); const shipping=merchandise>=200||merchandise===0?0:12; const place=(e:React.FormEvent)=>{e.preventDefault();if(cart.items.length&&ack&&age){setPlaced(true);cart.set([])}};
-  if(placed)return <main><Header/><section className="success-page"><span className="impact-label">No charge was made</span><h1>Test order<br/><em>landed.</em></h1><p>POW-DEMO-1001 is a browser-only demonstration. No payment, email, inventory, fulfillment, or customer record was created.</p><div className="success-actions"><Link className="button primary" href="/track-order?order=POW-DEMO-1001">Track demo order</Link><Link className="button ghost" href="/shop">Back to shop</Link></div></section><Footer/></main>;
-  return <main><Header/><section className="checkout-head"><span className="impact-label">Secure checkout · simulation</span><h1>Finish the<br/><em>test run.</em></h1><p>Everything below is a functional UX demonstration. It cannot collect a payment or create a real order.</p></section><DemoNotice>No payment processor, tax engine, carrier, inventory service, or messaging system is connected.</DemoNotice><form className="checkout-layout" onSubmit={place}><div className="checkout-fields"><section><span>01 / Contact</span><h2>Who&apos;s researching?</h2><div className="form-grid"><label>Email<input required type="email" placeholder="researcher@institution.com"/></label><label>Phone<input required type="tel" placeholder="(555) 555-0199"/></label></div></section><section><span>02 / Shipping</span><h2>Where&apos;s it going?</h2><div className="form-grid"><label>First name<input required/></label><label>Last name<input required/></label><label className="wide">Institution<input required/></label><label className="wide">Address<input required/></label><label>City<input required/></label><label>State<select required defaultValue=""><option value="" disabled>Select</option><option>CA</option><option>NV</option><option>AZ</option></select></label><label>ZIP<input required inputMode="numeric"/></label></div></section><section><span>03 / Test payment</span><h2>No card required.</h2><div className="payment-demo"><b>DEMO PAYMENT TOKEN</b><span>•••• 4242</span><small>This is static interface content. Card data is neither requested nor stored.</small></div></section><section className="acknowledgments"><label><input type="checkbox" checked={age} onChange={e=>setAge(e.target.checked)}/><span>I confirm I am 21 or older.</span></label><label><input type="checkbox" checked={ack} onChange={e=>setAck(e.target.checked)}/><span>I understand these materials are presented for research use only and the checkout is a no-charge simulation.</span></label></section></div><aside className="order-summary checkout-summary"><span>TEST ORDER / 01</span><h2>Review.</h2>{cart.items.length?cart.items.map(x=><div key={x.id}><span>{x.qty}× {x.name}<small>{x.strength}</small></span><b>${itemTotal(x).toFixed(2)}</b></div>):<p>Your test cart is empty. Add a product before placing an order.</p>}<div><span>Shipping</span><b>{shipping?`$${shipping.toFixed(2)}`:"FREE"}</b></div><div className="summary-total"><span>No-charge total</span><b>${(merchandise+shipping).toFixed(2)}</b></div><button className="add-button" disabled={!cart.items.length||!age||!ack}>Place test order</button><small>Submitting creates only an on-screen confirmation and clears this device&apos;s demo cart.</small></aside></form><Footer/></main>
+  const cart=useDemoCart();
+  const [ack,setAck]=useState(false);
+  const [age,setAge]=useState(false);
+  const [placed,setPlaced]=useState(false);
+  const [notice,setNotice]=useState("");
+  const [previewTotal,setPreviewTotal]=useState(0);
+  const formRef=useRef<HTMLFormElement>(null);
+  const paymentRef=useRef<HTMLDialogElement>(null);
+  const merchandise=cart.items.reduce((n,x)=>n+itemTotal(x),0);
+  const shipping=merchandise>=200||merchandise===0?0:12;
+  const total=merchandise+shipping;
+  const fillSample=()=>{
+    const values:Record<string,string>={email:"researcher@example.com",phone:"(202) 555-0142",firstName:"Alex",lastName:"Sample",institution:"Example Research Lab",address:"123 Example Street",city:"Sample City",state:"CA",zip:"90001"};
+    for(const [name,value] of Object.entries(values)){
+      const input=formRef.current?.elements.namedItem(name);
+      if(input instanceof HTMLInputElement||input instanceof HTMLSelectElement)input.value=value;
+    }
+    setNotice("Sample details filled. Review the acknowledgments before continuing.");
+  };
+  const preview=(e:React.FormEvent)=>{
+    e.preventDefault();
+    if(!cart.items.length||!ack||!age)return;
+    setNotice("");
+    setPreviewTotal(total);
+    paymentRef.current?.showModal();
+  };
+  const dismiss=(failed=false)=>{
+    paymentRef.current?.close();
+    setNotice(failed?"Demo payment not completed. Nothing was charged. Your cart is saved; try the preview again.":"Venmo preview canceled. Nothing was charged and your cart is unchanged.");
+  };
+  const approve=()=>{
+    // Preview only: no payment SDK, transfer link, request, or merchant credentials.
+    paymentRef.current?.close();
+    setPlaced(true);
+    cart.set([]);
+  };
+  if(placed)return <main><Header/><section className="success-page"><span className="impact-label">Venmo demo complete · no charge made</span><h1>Test order<br/><em>landed.</em></h1><p>POW-DEMO-1001 · Venmo preview · ${previewTotal.toFixed(2)} simulated total.</p><p>No payment, email, inventory, fulfillment, or customer record was created. This device&apos;s demo cart has been cleared.</p><div className="success-actions"><Link className="button primary" href="/track-order?order=POW-DEMO-1001">Track demo order</Link><Link className="button ghost" href="/shop">Back to shop</Link></div></section><Footer/></main>;
+  return <main><Header/>
+    <section className="checkout-head"><span className="impact-label">Venmo checkout · preview</span><h1>Finish the<br/><em>test run.</em></h1><p>Try the Venmo-only checkout experience. This preview cannot collect a payment or create a real order.</p></section>
+    <DemoNotice>Venmo setup pending. No money moves in this preview. Use sample details to walk through the experience.</DemoNotice>
+    <form ref={formRef} className="checkout-layout" onSubmit={preview}>
+      <div className="checkout-fields">
+        <section><span>01 / Contact</span><h2>Who&apos;s researching?</h2><button className="sample-details-button" type="button" onClick={fillSample}>Fill sample details</button><div className="form-grid"><label>Email<input name="email" required type="email" placeholder="researcher@example.com"/></label><label>Phone<input name="phone" required type="tel" placeholder="(202) 555-0142"/></label></div></section>
+        <section><span>02 / Shipping</span><h2>Where&apos;s it going?</h2><div className="form-grid"><label>First name<input name="firstName" required/></label><label>Last name<input name="lastName" required/></label><label className="wide">Institution<input name="institution" required/></label><label className="wide">Address<input name="address" required/></label><label>City<input name="city" required/></label><label>State<select name="state" required defaultValue=""><option value="" disabled>Select</option><option>CA</option><option>NV</option><option>AZ</option></select></label><label>ZIP<input name="zip" required inputMode="numeric"/></label></div></section>
+        <section><span>03 / Payment</span><h2>Pay with Venmo.</h2><div className="venmo-method"><div><strong>Venmo</strong><span>Only payment option</span></div><span className="venmo-selected">Selected ✓</span><p>Review your total, preview the Venmo approval step, then return to your order confirmation.</p><small>Demonstration only. No Venmo login or financial details are requested.</small></div></section>
+        <section className="acknowledgments"><label><input type="checkbox" checked={age} onChange={e=>setAge(e.target.checked)}/><span>I confirm I am 21 or older.</span></label><label><input type="checkbox" checked={ack} onChange={e=>setAck(e.target.checked)}/><span>I understand these materials are presented for research use only and the checkout is a no-charge simulation.</span></label></section>
+      </div>
+      <aside className="order-summary checkout-summary"><span>TEST ORDER / 01</span><h2>Review.</h2>{cart.items.length?cart.items.map(x=><div key={x.id}><span>{x.qty}× {x.name}<small>{x.strength}</small></span><b>${itemTotal(x).toFixed(2)}</b></div>):<p>Your test cart is empty. <Link href="/shop">Add a product</Link> to try the Venmo preview.</p>}<div><span>Demo shipping</span><b>{shipping?`$${shipping.toFixed(2)}`:"FREE"}</b></div><div className="summary-total"><span>Preview total</span><b>${total.toFixed(2)}</b></div><p>Shipping is a demo estimate. Tax is not calculated.</p><button className="venmo-pay-button" disabled={!cart.items.length||!age||!ack}>Preview Venmo payment →</button><p>Nothing is charged. Your cart clears only after you approve the simulated payment.</p><p role="status" aria-live="polite" className="venmo-notice">{notice}</p><details className="venmo-setup"><summary>What remains before launch?</summary><ul><li>Business identity and payment account details.</li><li>Provider confirmation that the catalog and business are eligible.</li><li>Connect approved website checkout, verify payments and refunds, and connect order handling.</li></ul><p>A Venmo username alone does not activate checkout. Autoship billing is not connected.</p></details></aside>
+    </form>
+    <dialog ref={paymentRef} className="venmo-preview-dialog" aria-labelledby="venmo-preview-title" aria-describedby="venmo-preview-description" onCancel={e=>{e.preventDefault();dismiss()}}>
+      <span className="impact-label">POW! checkout demonstration</span><h2 id="venmo-preview-title">Venmo preview</h2><p id="venmo-preview-description">This is a simulated approval step inside POW!, not the Venmo app. No account is connected.</p><div className="venmo-preview-amount"><span>POW! Peptides<br/><small>Demo total · no charge</small></span><strong>${previewTotal.toFixed(2)}</strong></div><p>In an approved live checkout, you would authorize the payment with Venmo before returning to POW!.</p><button className="venmo-pay-button" type="button" onClick={approve}>Approve demo payment</button><button className="venmo-cancel-button" type="button" onClick={()=>dismiss()}>Cancel and return to checkout</button><button className="venmo-failure-button" type="button" onClick={()=>dismiss(true)}>Try payment-not-completed example</button>
+    </dialog><Footer/>
+  </main>;
 }
 
 function TrackingView(){

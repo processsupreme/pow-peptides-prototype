@@ -215,6 +215,21 @@ test("ships a connected, explicitly simulated commerce loop", async () => {
   assert.match(source, /addCartItem\(\{id:/);
 });
 
+test("presents Venmo-only checkout as an unconnected preview", async () => {
+  const html = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
+  assert.match(html, /Pay with Venmo/);
+  assert.match(html, /Only payment option/);
+  assert.match(html, /Venmo setup pending/);
+  assert.match(html, /Fill sample details/);
+  assert.match(html, /A Venmo username alone does not activate checkout/);
+  assert.match(html, /<dialog[^>]*aria-labelledby="venmo-preview-title"/);
+  assert.match(html, /Approve demo payment/);
+  assert.match(html, /Cancel and return to checkout/);
+  assert.match(html, /Try payment-not-completed example/);
+  assert.match(html, /disabled=""[^>]*>Preview Venmo payment/);
+  assert.doesNotMatch(html, /4242|DEMO PAYMENT TOKEN|name="(?:card|cvv|venmoPassword)"|https:\/\/(?:www\.)?venmo\.com\/u\//);
+});
+
 test("labels all COA examples as demonstration data", async () => {
   const coa = (await (await render("/coa")).text()).replaceAll("<!-- -->", "");
   const data = await readFile(new URL("../app/pow-data.ts", import.meta.url), "utf8");
