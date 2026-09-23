@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
 
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
 workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
@@ -228,6 +229,29 @@ test("presents Venmo-only checkout as an unconnected preview", async () => {
   assert.match(html, /Try payment-not-completed example/);
   assert.match(html, /disabled=""[^>]*>Preview Venmo payment/);
   assert.doesNotMatch(html, /4242|DEMO PAYMENT TOKEN|name="(?:card|cvv|venmoPassword)"|https:\/\/(?:www\.)?venmo\.com\/u\//);
+});
+
+test("calculates the demo tariff on merchandise once, excluding shipping", () => {
+  assert.deepEqual(demoCheckoutTotals(0), { tariff: 0, shipping: 0, total: 0 });
+  assert.deepEqual(demoCheckoutTotals(80), { tariff: 4, shipping: 12, total: 96 });
+  assert.deepEqual(demoCheckoutTotals(199), { tariff: 9.95, shipping: 12, total: 220.95 });
+  assert.deepEqual(demoCheckoutTotals(200), { tariff: 10, shipping: 0, total: 210 });
+  assert.deepEqual(demoCheckoutTotals(240), { tariff: 12, shipping: 0, total: 252 });
+  assert.deepEqual(demoCheckoutTotals(19.99), { tariff: 1, shipping: 12, total: 32.99 });
+});
+
+test("discloses the fictional tariff cameo and fee before the payment preview", async () => {
+  const html = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
+  assert.match(html, /<dialog[^>]*aria-labelledby="tariff-title"/);
+  assert.match(html, /Sorry, but because of the war there is a 5% tariff fee added to your order\. Once the war is over so is this additional fee\./);
+  assert.match(html, /Parody · fictional quote/);
+  assert.match(html, /not a government tax/);
+  assert.match(html, /trump-comic-cutout\.png/);
+  assert.match(html, /Replay the announcement/);
+  assert.match(html, /Tariff fee · 5% \(demo\)/);
+  assert.match(html, /Includes a 5% merchandise surcharge/);
+  const cart = await (await render("/cart")).text();
+  assert.match(cart, /Tariff fee · 5% \(demo\)/);
 });
 
 test("labels all COA examples as demonstration data", async () => {

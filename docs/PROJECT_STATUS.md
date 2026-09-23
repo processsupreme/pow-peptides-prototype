@@ -1,5 +1,9 @@
 # Project status and roadmap
 
+## Cartoon checkout cameo September 22 2026
+
+Entering checkout opens a dismissible, replayable comic popup with an orange Donald Trump caricature and the client's supplied fictional tariff quote. The requested 5% demo surcharge is calculated on merchandise only, rounded to cents, and itemized in cart and checkout; the Venmo preview and confirmation use the same total. Shipping retains its existing merchandise-based threshold. The popup labels the quote as parody and the fee as a POW! demo surcharge, not a verified government tax. It respects reduced-motion settings. No actual payment or recurring fee is enabled, and there is no automatic determination of when a war ends. See [the checkout walkthrough](VENMO_PREVIEW.md) and [asset provenance](CARTOON_ASSET.md).
+
 ## Venmo preview September 22 2026
 
 Checkout now presents Venmo as the only payment option, with sample contact details, a labeled simulated approval dialog, cancel/failure recovery, and a no-charge confirmation. All payment behavior remains local. The old static card token is removed. Business details, catalog eligibility/provider approval, and the live checkout/order integration remain outstanding; entering a Venmo username cannot activate payments. See [Venmo preview and walkthrough](VENMO_PREVIEW.md). Inventory, prices, hosting identity, and dependencies are unchanged.
