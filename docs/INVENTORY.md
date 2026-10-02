@@ -29,6 +29,8 @@ Bundle cart lines retain the fixed price, full component list, and pending detai
 
 ## Maintaining the source
 
+The October 2 first-order email offer is an explicitly requested 10% promotion, itemized separately from supplied product and bundle prices. The demo applies it once per browser after email entry; line-item base prices and inventory records are unchanged. See [the offer's scope, pricing examples, and production requirements](EMAIL_OFFER.md). Earlier statements about no discounts refer to automatic volume, box, or bulk price reductions, not this subsequently requested offer.
+
 Update only from newly supplied or explicitly approved product data. Keep variant IDs stable for unchanged strengths; do not derive additional strengths, prices, discounts, or stock from a formula. Check the document's units and component amounts before normalizing its wording.
 
 Run `npm run lint`, `npm test`, `npm run typecheck`, and `npm run vercel-build` on the Mac mini. The rendered-HTML suite includes an independent transcription of all 39 strength/price/count records and checks every product page. Update those expectations only when the authoritative input changes. Do not commit the private source document or local reconciliation artifacts.

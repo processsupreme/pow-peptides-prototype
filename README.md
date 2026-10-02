@@ -33,6 +33,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 
 ## Prototype interactions
 
+- Required email popout on shopping pages, with the requested 10% first-order offer applied to demo cart and checkout; returning access and one-time use are remembered locally, and emails are not stored or sent. See [email offer walkthrough](docs/EMAIL_OFFER.md).
 - Mobile navigation and responsive layouts down to 320 px
 - Referral capture in local storage before mock verification
 - Gate form, OTP error, resend, success, reset, and Google demonstration

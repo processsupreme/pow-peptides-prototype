@@ -269,3 +269,40 @@
 @media(max-width:700px){.bundle-spotlight{grid-template-columns:1fr;padding:48px 22px;gap:28px}.research-bundles-head{padding:44px 22px 26px}.research-bundles-head>div{align-items:start;flex-direction:column;gap:12px}.bundle-collection-note{padding:20px 22px}.research-bundles-grid{grid-template-columns:1fr;padding:32px 22px;gap:28px}.research-bundle-title{min-height:165px}.research-bundle-title h2{font-size:2.7rem}.bundle-cart-feedback{margin:0 22px 40px;align-items:start;flex-direction:column;gap:12px}.bundle-spotlight-list a{gap:8px}}
 
 .bundle-added-link{width:100%;font-size:.875rem;font-weight:700;text-decoration:underline;text-underline-offset:4px}
+
+/* First-order email gate. Abstract impact geometry and approved POW! artwork. */
+.email-gated-content:focus{outline:none}
+.email-offer-dialog{position:fixed;inset:0;z-index:100;width:min(1120px,calc(100% - 48px));max-height:calc(100dvh - 48px);margin:auto;padding:0;border:3px solid var(--ink);background:var(--ink);color:white;overflow:auto;box-shadow:12px 12px 0 var(--lime)}
+.email-offer-dialog[open]{display:grid;grid-template-columns:.85fr 1.15fr}
+.email-offer-dialog::backdrop{background:rgb(0 0 0 / .82);backdrop-filter:blur(7px)}
+.email-gated-content[inert]{filter:blur(7px);pointer-events:none;user-select:none}
+.email-offer-art{display:flex;flex-direction:column;justify-content:center;min-width:0;gap:14px;padding:42px 30px;background:var(--lime);color:var(--ink);clip-path:polygon(0 0,100% 0,93% 100%,0 100%)}
+.email-offer-art>span:first-child{font-size:.875rem;font-weight:900;letter-spacing:.14em}
+.email-offer-number{display:flex;align-items:baseline;font-family:Impact,"Arial Black",sans-serif;font-size:clamp(7rem,16vw,13rem);line-height:1;letter-spacing:-.06em;transform:skewY(-7deg)}
+.email-offer-number>span{font-size:.46em;letter-spacing:-.04em}
+.email-offer-art>b{font-family:Impact,"Arial Black",sans-serif;font-size:clamp(4rem,8vw,6.5rem);line-height:1;transform:skewY(-7deg)}
+.email-offer-art-footer{margin-top:46px;font-size:1rem;font-weight:900;line-height:1.6;letter-spacing:.03em}
+.email-offer-copy{padding:36px 48px 32px;min-width:0}
+.email-offer-logo{display:block;width:230px;height:auto;max-width:100%;margin-bottom:28px}
+.email-offer-eyebrow{display:block;font-size:.75rem;letter-spacing:.14em;font-weight:700;color:var(--lime)}
+.email-offer-copy h2{font-size:clamp(2.75rem,5vw,4rem);line-height:.95;margin:18px 0;letter-spacing:-.045em;text-transform:uppercase}
+.email-offer-copy h2 em{color:var(--lime)}
+.email-offer-copy>p{font-size:1.125rem;line-height:1.55;margin:16px 0 24px;max-width:440px}
+.email-offer-copy form{display:grid;gap:10px}
+.email-offer-copy label{font-size:.875rem;font-weight:700}
+.email-offer-copy input{width:100%;min-height:56px;padding:16px;border:2px solid white;background:white;color:var(--ink);font-size:1rem;border-radius:0}
+.email-offer-submit{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px;border:2px solid var(--lime);background:var(--lime);color:var(--ink);font-size:1rem;font-weight:900;text-align:left;cursor:pointer}
+.email-offer-submit:hover{background:white;border-color:white}
+.email-offer-copy .email-offer-error{font-size:.875rem;line-height:1.5;margin:0;color:white}
+.email-offer-copy .email-offer-error:not(:empty){padding:12px;border-left:3px solid var(--lime)}
+.email-offer-copy .email-offer-terms{font-size:.875rem;margin:18px 0;line-height:1.5;color:#ddd}
+.email-offer-copy .email-offer-demo{font-size:.75rem;line-height:1.6;color:#bbb;border-top:1px solid #555;padding-top:16px;margin-bottom:12px}
+.email-offer-help{font-size:.875rem;text-decoration:underline;text-underline-offset:4px}
+.email-offer-copy a:focus-visible,.email-offer-copy input:focus-visible,.email-offer-copy button:focus-visible{outline:3px solid white;outline-offset:4px}
+.email-offer-copy input:focus-visible{outline-color:var(--lime)}
+.order-summary>.first-order-discount{padding:16px 12px;background:var(--lime);color:var(--ink);border:2px solid var(--ink);gap:12px}
+.order-summary .first-order-discount small{display:block;margin-top:5px;font-size:.875rem;color:var(--ink)}
+.first-order-used{font-size:.875rem;line-height:1.5}
+.venmo-offer-detail{font-size:1rem;padding:12px;background:var(--lime);color:var(--ink)}
+@media(max-width:720px){.email-offer-dialog{width:calc(100% - 24px);max-height:calc(100dvh - 24px);box-shadow:5px 5px 0 var(--lime)}.email-offer-dialog[open]{grid-template-columns:1fr}.email-offer-art{display:none}.email-offer-copy{padding:26px 22px}.email-offer-logo{width:190px;margin-bottom:22px}.email-offer-copy h2{font-size:2.9rem}.email-offer-copy>p{font-size:1rem}.email-offer-submit{font-size:1rem;padding:16px 12px}}
+@media(max-height:680px) and (min-width:721px){.email-offer-copy{padding-block:24px}.email-offer-logo{width:190px;margin-bottom:16px}.email-offer-copy h2{font-size:3rem}}

@@ -1,5 +1,13 @@
 # Project status and roadmap
 
+## First-order email gate October 2 2026
+
+Added a required email-entry popout on shopping routes with POW's approved branding, a large 10% offer, native modal behavior, input validation, inert storefront content, and a mobile layout. Successful sample-email entry unlocks the current destination and activates a separate 10% merchandise discount in cart, checkout, payment preview, and confirmation. Access persists locally; successful simulated payment consumes the offer once. Cancel/failure retains it. The tariff popup waits for the email gate to finish. Email addresses are not saved or sent; no signup, consent, authentication, or email service has been connected.
+
+The requested offer rate is approved; the demo includes bundles and applies the existing 5% fee after discount while preserving the pre-discount $200 shipping threshold. Final eligibility, fee/shipping interaction, terms, real signup storage, and order-backed redemption remain launch decisions. See [email offer walkthrough and limits](EMAIL_OFFER.md). Inventory, hosting identities, dependencies, and existing cart storage are preserved. This feature is retained locally pending a separate deployment instruction. Local validation: lint passed with the same 11 image-element warnings, all 52 tests passed with the Vinext build, typecheck passed, and the Vercel build passed compilation and TypeScript after the documented sandbox port-binding retry. Coverage limits and a sample-email walkthrough are recorded in `EMAIL_OFFER.md`.
+
+The preceding bundle release (`7f65da1`) was pushed and deployed to the existing Vercel production site on October 2 at the user's explicit request. Vercel's Git trigger remains enabled. Its separate check runners initially failed to find `package.json`; a clean redeploy passed both checks and production promotion required no bypass. No merge into `main` occurred.
+
 ## Research bundle collection October 2 2026
 
 Added `/bundles` with five numbered comic-cover cards in the existing black/white/lime identity. Each card shows its products, inventory-backed strengths where known, supplied fixed price, and an add-to-test-cart action with immediate confirmation. A homepage spotlight, compact shop section, desktop/mobile navigation, and footer make the collection discoverable. In-page links lead directly to each bundle; known components link to their existing product records. The original four-product box builder remains available.

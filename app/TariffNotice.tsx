@@ -3,19 +3,19 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 
-export default function TariffNotice({ fee }: { fee: number }) {
+export default function TariffNotice({ fee, active = true }: { fee: number; active?: boolean }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const returnFocusRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (dialog && !dialog.open) dialog.showModal();
+    if (active && dialog && !dialog.open) dialog.showModal();
     return () => dialog?.close();
-  }, []);
+  }, [active]);
 
   return <>
     <div className="tariff-reminder">
-      <span><b>5% tariff fee · demo</b> Calculated on merchandise before shipping.</span>
+      <span><b>5% tariff fee · demo</b> Calculated on merchandise after any first-order discount, before shipping.</span>
       <button ref={returnFocusRef} type="button" onClick={() => dialogRef.current?.showModal()}>Replay the announcement ↗</button>
     </div>
     <dialog ref={dialogRef} className="tariff-dialog" aria-labelledby="tariff-title" aria-describedby="tariff-quote tariff-disclosure" onClose={() => returnFocusRef.current?.focus({ preventScroll: true })}>

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { FIRST_ORDER_OFFER_KEY, claimFirstOrderOffer, readOfferStatus, redeemFirstOrderOffer, isShoppingRoute } from "../app/first-order-offer.ts";
 import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bundles.ts";
 import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
 
@@ -234,12 +235,12 @@ test("presents Venmo-only checkout as an unconnected preview", async () => {
 });
 
 test("calculates the demo tariff on merchandise once, excluding shipping", () => {
-  assert.deepEqual(demoCheckoutTotals(0), { tariff: 0, shipping: 0, total: 0 });
-  assert.deepEqual(demoCheckoutTotals(80), { tariff: 4, shipping: 12, total: 96 });
-  assert.deepEqual(demoCheckoutTotals(199), { tariff: 9.95, shipping: 12, total: 220.95 });
-  assert.deepEqual(demoCheckoutTotals(200), { tariff: 10, shipping: 0, total: 210 });
-  assert.deepEqual(demoCheckoutTotals(240), { tariff: 12, shipping: 0, total: 252 });
-  assert.deepEqual(demoCheckoutTotals(19.99), { tariff: 1, shipping: 12, total: 32.99 });
+  assert.deepEqual(demoCheckoutTotals(0), { discount: 0, tariff: 0, shipping: 0, total: 0 });
+  assert.deepEqual(demoCheckoutTotals(80), { discount: 0, tariff: 4, shipping: 12, total: 96 });
+  assert.deepEqual(demoCheckoutTotals(199), { discount: 0, tariff: 9.95, shipping: 12, total: 220.95 });
+  assert.deepEqual(demoCheckoutTotals(200), { discount: 0, tariff: 10, shipping: 0, total: 210 });
+  assert.deepEqual(demoCheckoutTotals(240), { discount: 0, tariff: 12, shipping: 0, total: 252 });
+  assert.deepEqual(demoCheckoutTotals(19.99), { discount: 0, tariff: 1, shipping: 12, total: 32.99 });
 });
 
 test("discloses the fictional tariff cameo and fee before the payment preview", async () => {
@@ -407,4 +408,63 @@ test("makes bundles discoverable from home and shop without replacing the box bu
   }
   const html = await (await render("/bundles")).text();
   assert.match(html, /href="\/build-a-box"/);
+});
+
+
+test("requires email entry on shopping routes and leaves support available", async () => {
+  for (const path of ["/", "/shop", "/shop/ghk-cu", "/bundles", "/build-a-box", "/cart", "/checkout"]) {
+    const html = (await (await render(path)).text()).replaceAll("<!-- -->", "");
+    assert.match(html, /<dialog[^>]*open=""[^>]*aria-labelledby="email-offer-title"/);
+    assert.match(html, /inert=""/);
+    assert.match(html, /10% off your first order/);
+    assert.match(html, /type="email"[^>]*required=""/);
+    assert.match(html, /Unlock the menu &amp; save 10%/);
+    assert.match(html, /your email is not stored/);
+    assert.match(html, /href="\/support"/);
+  }
+  for (const path of ["/support", "/coa", "/research", "/access", "/partner", "/ops"]) {
+    const html = await (await render(path)).text();
+    assert.doesNotMatch(html, /aria-labelledby="email-offer-title"/);
+  }
+  assert.equal(isShoppingRoute("/categories/recovery"), true);
+  assert.equal(isShoppingRoute("/shop/ghk-cu"), true);
+  assert.equal(isShoppingRoute("/shopper"), false);
+});
+
+test("remembers access and consumes the first-order offer once without storing email", () => {
+  const values = new Map();
+  const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  assert.equal(readOfferStatus(storage), "locked");
+  for (const email of ["", "bad", "a@b", "one two@example.com"]) assert.throws(() => claimFirstOrderOffer(storage, email));
+  assert.equal(values.size, 0);
+  assert.equal(claimFirstOrderOffer(storage, " researcher@example.com "), "available");
+  assert.deepEqual([...values], [[FIRST_ORDER_OFFER_KEY, "available"]]);
+  assert.equal(readOfferStatus(storage), "available");
+  // Browsing, canceled previews, and repeat signup do not consume the offer.
+  assert.equal(claimFirstOrderOffer(storage, "second@example.com"), "available");
+  assert.equal(readOfferStatus(storage), "available");
+  redeemFirstOrderOffer(storage);
+  assert.equal(readOfferStatus(storage), "used");
+  assert.equal(claimFirstOrderOffer(storage, "new@example.com"), "used");
+  redeemFirstOrderOffer(storage);
+  assert.deepEqual([...values], [[FIRST_ORDER_OFFER_KEY, "used"]]);
+  values.set(FIRST_ORDER_OFFER_KEY, "corrupted");
+  assert.equal(readOfferStatus(storage), "locked");
+});
+
+test("storage failures do not falsely claim that an email offer was saved", () => {
+  const blocked = { getItem: () => null, setItem: () => { throw new Error("Storage blocked"); } };
+  assert.throws(() => claimFirstOrderOffer(blocked, "researcher@example.com"), /Storage blocked/);
+});
+
+test("applies ten percent to first-order merchandise with cent rounding and existing shipping threshold", () => {
+  assert.deepEqual(demoCheckoutTotals(0, true), { discount: 0, tariff: 0, shipping: 0, total: 0 });
+  assert.deepEqual(demoCheckoutTotals(80, true), { discount: 8, tariff: 3.6, shipping: 12, total: 87.6 });
+  assert.deepEqual(demoCheckoutTotals(199, true), { discount: 19.9, tariff: 8.96, shipping: 12, total: 200.06 });
+  assert.deepEqual(demoCheckoutTotals(200, true), { discount: 20, tariff: 9, shipping: 0, total: 189 });
+  assert.deepEqual(demoCheckoutTotals(220, true), { discount: 22, tariff: 9.9, shipping: 0, total: 207.9 });
+  assert.deepEqual(demoCheckoutTotals(19.99, true), { discount: 2, tariff: .9, shipping: 12, total: 30.89 });
+  assert.equal(demoCheckoutTotals(1040, true).discount, 104);
+  assert.equal(demoCheckoutTotals(1040, true).total, 982.8);
+  assert.equal(demoCheckoutTotals(200, false).total, 210);
 });
