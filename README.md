@@ -20,6 +20,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 - `/access` and `/verify` — research profile gate with form, OTP error/resend/success, Google prototype, returning-session marker, and referral preservation
 - `/` — merchandising homepage
 - `/shop` — complete 38-item searchable/filterable catalog with supplied strengths, prices, mobile filters, and empty state
+- `/bundles` — five POW-supplied research bundles at fixed $200/$220 prices, with component lists and additions to the local demo cart
 - `/shop/reta-glp-3` — high-detail product record with purchase mode, cadence, quantity, cost basis, COA snapshot, research profile, handling/testing fields, external educational reference, cart feedback, and related products
 - `/categories/[slug]` — catalog category entry
 - `/coa` — searchable and filterable COA vault

@@ -17,6 +17,16 @@ Catalog cards list supplied strengths, the starting price where multiple strengt
 
 The cart storage key was versioned for this change. Previous local demo carts are no longer loaded, preventing old prices or invented strengths from reappearing. Old storage is not deleted. This is still a no-charge prototype: inventory is not reserved or decremented, and shipping/fulfillment values remain labeled demonstrations. This stock snapshot does not establish a COA, lot release, live availability, or subscription eligibility.
 
+## Research bundles (October 2, 2026)
+
+`app/pow-bundles.ts` records the five user-supplied bundle names, component lists, and fixed prices: Pilates $200; Goddess $220; Raver $200; Just divorced $200; Benjamin buttons $220. These explicitly supplied bundle prices are independent of the sum of individual product prices. No additional discount, savings claim, gift, subscription rule, or bundle stock count is inferred.
+
+The prototype shows one vial per listed component. Known components use their single supplied inventory variant: BPC-157 / TB-500 maps to `bpc-tb-500`, Tesa / Ipa to `tesamorelin-ipamorelin`, Epithalon to `epitalon`, and B12 to `vitamin-b12`. No standalone catalog names or numeric inventory records change. Confirm bundle quantities and these shorthand mappings before launch.
+
+Triple Threat and Super Man have no confirmed inventory mapping. Preserve the supplied names and Super Man's supplied 10 mg strength; Triple Threat's strength and both products' catalog details remain visibly pending. Do not assume Triple Threat is the existing three-compound blend, or substitute another product for Super Man. Both bundles remain usable in the explicitly simulated shopping flow while these requirements are resolved. No standalone price or stock count is invented.
+
+Bundle cart lines retain the fixed price, full component list, and pending details through local storage and checkout. Their quantity means number of complete bundles. Existing demo shipping and the 5% merchandise surcharge still apply; bundle prices are merchandise amounts, not final checkout totals. Inventory is neither reserved nor decremented.
+
 ## Maintaining the source
 
 Update only from newly supplied or explicitly approved product data. Keep variant IDs stable for unchanged strengths; do not derive additional strengths, prices, discounts, or stock from a formula. Check the document's units and component amounts before normalizing its wording.

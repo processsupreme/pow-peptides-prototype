@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bundles.ts";
 import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
 
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -29,6 +30,7 @@ for (const [pathname, expected] of [
   ["/subscribe", "Keep the"],
   ["/cart", "Your research"],
   ["/build-a-box", "Four heavy"],
+  ["/bundles", "Pick your"],
   ["/checkout", "Finish the"],
   ["/track-order", "Track the"],
   ["/compare", "Two products"],
@@ -206,7 +208,7 @@ test("ships a connected, explicitly simulated commerce loop", async () => {
   const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
   assert.match(product, /POW SUPPLIED PRICING/);
   assert.doesNotMatch(product, /VIALS 5%|VIALS 40%/);
-  assert.match(cart, /Product prices match POW/);
+  assert.match(cart, /Product and bundle prices match POW/);
   assert.doesNotMatch(cart, /Volume savings|volume tier applied/);
   assert.match(box, /SUPPLIED PRICES/);
   assert.doesNotMatch(box, /25% OFF|FREE WATER|free water/);
@@ -350,4 +352,59 @@ test("renders the supplied default strength, price and count on every product pa
   }
   const blend = (await (await render("/shop/tesamorelin-ipamorelin")).text()).replaceAll("<!-- -->", "");
   assert.match(blend, /Tesamorelin 13 mg \/ Ipamorelin 3 mg/);
+});
+
+
+test("renders all five supplied research bundles with exact prices and contents", async () => {
+  const html = (await (await render("/bundles")).text()).replaceAll("<!-- -->", "");
+  for (const [slug, price, names] of [
+    ["pilates", 200, ["BPC-157 / TB-500", "GHK-Cu", "Tesa / Ipa"]],
+    ["goddess", 220, ["GHK-Cu", "SNAP-8", "Epithalon", "KLOW"]],
+    ["raver", 200, ["PT-141", "Oxytocin", "Triple Threat", "B12"]],
+    ["just-divorced", 200, ["Super Man", "KLOW", "GHK-Cu"]],
+    ["benjamin-buttons", 220, ["GHK-Cu", "Epithalon", "SNAP-8", "Tesa / Ipa"]],
+  ]) {
+    const card = html.split(`id="${slug}"`)[1].split("</article>")[0];
+    assert.ok(card.includes(`$${price}`));
+    for (const name of names) assert.ok(card.includes(name), `${slug} contains ${name}`);
+    assert.match(card, /Add bundle/);
+  }
+  assert.match(html, /Strength to be confirmed/);
+  assert.match(html, /Catalog details pending/);
+  assert.match(html, /do not describe intended use or promised results/);
+});
+
+test("keeps fixed bundle prices and component details through cart serialization and totals", () => {
+  assert.deepEqual(researchBundles.map(bundle => bundle.price), [200, 220, 200, 200, 220]);
+  const items = researchBundles.map(bundleCartItem);
+  assert.equal(new Set(items.map(item => item.id)).size, 5);
+  const restored = JSON.parse(JSON.stringify(items));
+  assert.deepEqual(restored, items);
+  for (const [index, item] of restored.entries()) {
+    assert.equal(item.qty, 1);
+    assert.equal(item.researchBundle, true);
+    assert.equal(item.unitPrice, researchBundles[index].price);
+    for (const component of bundleContents(researchBundles[index])) {
+      assert.ok(item.strength.includes(component.name));
+      assert.ok(item.strength.includes(component.strength));
+    }
+  }
+  const subtotal = restored.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+  assert.equal(subtotal, 1040);
+  assert.equal(demoCheckoutTotals(subtotal).total, 1092);
+  assert.equal(demoCheckoutTotals(items[0].unitPrice * 2).total, 420);
+  assert.equal(bundleContents(researchBundles[0])[2].strength, "16 mg total");
+  assert.equal(bundleContents(researchBundles[2])[2].slug, undefined);
+  assert.equal(bundleContents(researchBundles[3])[0].strength, "10 mg");
+  assert.equal(bundleContents(researchBundles[3])[0].slug, undefined);
+});
+
+test("makes bundles discoverable from home and shop without replacing the box builder", async () => {
+  for (const path of ["/", "/shop"]) {
+    const html = await (await render(path)).text();
+    assert.match(html, /href="\/bundles"/);
+    for (const bundle of researchBundles) assert.ok(html.includes(`/bundles#${bundle.slug}`));
+  }
+  const html = await (await render("/bundles")).text();
+  assert.match(html, /href="\/build-a-box"/);
 });
