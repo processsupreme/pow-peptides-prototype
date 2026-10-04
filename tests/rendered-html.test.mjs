@@ -63,7 +63,7 @@ test("keeps unresolved business data explicit", async () => {
   const html = (await response.text()).replaceAll("<!-- -->", "");
   assert.match(html, /\$80/);
   assert.match(html, /XX%/);
-  assert.match(html, /POW-XXXX/);
+  assert.match(html, /Lot record pending/);
   assert.doesNotMatch(html, /99(?:\.\d+)?%/);
 });
 
@@ -562,4 +562,47 @@ test("exposes a direct coupon profile route and an explicitly simulated checkout
   assert.match(checkout, /Start test email verification/);
   assert.match(checkout, /No verification email is sent/);
   assert.match(checkout, /Offers do not stack/);
+});
+
+test("every catalog product has a distinct research file with usable evidence links and section navigation", async () => {
+  const { productResearch, researchSources } = await import("../app/product-research.ts");
+  const { products: inventory } = JSON.parse(await readFile(new URL("../app/pow-inventory.json", import.meta.url), "utf8"));
+  assert.deepEqual(Object.keys(productResearch).sort(), Object.keys(inventory).sort());
+  assert.equal(new Set(Object.values(productResearch).map(profile => profile.headline)).size, 38);
+  for (const [slug, profile] of Object.entries(productResearch)) {
+    const response = await render(`/shop/${slug}`);
+    assert.equal(response.status, 200, slug);
+    const html = (await response.text()).replaceAll("<!-- -->", "");
+    for (const section of ["overview", "mechanisms", "evidence", "specifications", "questions", "sources"]) {
+      assert.ok(html.includes(`href="#${section}"`), `${slug}: link to ${section}`);
+      assert.equal(html.split(`id="${section}"`).length - 1, 1, `${slug}: unique ${section} destination`);
+    }
+    for (const { source } of profile.evidence) {
+      assert.ok(researchSources[source], `${slug}: source exists`);
+      assert.ok(html.includes(`href="${researchSources[source].url.replaceAll("&", "&amp;")}"`), `${slug}: source link rendered`);
+      assert.ok(html.includes(`id="source-${source}"`), `${slug}: reference destination exists`);
+      assert.equal(new URL(researchSources[source].url).protocol, "https:");
+    }
+    if (!profile.evidence.length) {
+      assert.ok(["klow", "klow-pro"].includes(slug));
+      assert.match(html, /Formula pending/);
+    }
+    assert.match(html, /<details><summary>/);
+    assert.match(html, /No numerical analytical results are claimed/);
+    assert.doesNotMatch(html.split('<section class="product-section compact">')[0], /Lot POW-XXXX|>Current COA<|Record mapped\./);
+  }
+});
+
+test("product research preserves unresolved identities and separates ingredient evidence from blends", async () => {
+  const page = async slug => (await (await render(`/shop/${slug}`)).text()).replaceAll("<!-- -->", "");
+  assert.match(await page("nad-plus"), /1000 mcg/);
+  assert.match(await page("tesamorelin-ipamorelin"), /13 mg tesamorelin plus 3 mg ipamorelin/);
+  assert.match(await page("cjc-1295-ipamorelin"), /Does this contain DAC/);
+  assert.match(await page("bpc-tb-500"), /does not establish a 10 mg \/ 10 mg split/);
+  assert.match(await page("cortexin"), /does not resolve the scientific identity/);
+  assert.match(await page("prime-191-gh"), /without inventing a conversion/);
+  assert.match(await page("snap-8"), /Manufacturer data/);
+  assert.match(await page("oxytocin"), /no significant benefit/);
+  assert.match(await page("dsip"), /without improved subjective sleep quality/);
+  assert.match(await page("klow-pro"), /POW has not yet supplied the formulation difference/);
 });

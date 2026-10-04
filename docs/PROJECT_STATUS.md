@@ -1,5 +1,13 @@
 # Project status and roadmap
 
+## Detailed product research October 3 2026
+
+All 38 product pages now have original, product-specific research narratives, mechanism sections, evidence summaries, FAQs, and selected primary-source links. Six section links make the longer records navigable. Sources distinguish cell, animal, human, manufacturer, and comparator evidence. Unconfirmed formulas and identities remain explicit; no competitor claims or test results were copied. Product-page COA links now expose the pending documentation state rather than imply an available certificate. All supplied inventory and purchase behavior are preserved. See [research scope, references, and outstanding specifications](PRODUCT_RESEARCH.md).
+
+Scientific and POW labeling review, actual lot documentation, and the noted formulation details remain outstanding. No production integrations or hosting configuration changed. This content update is local, with no push, merge, or deployment.
+
+Validation on the Mini: lint passed with 11 existing image-element warnings; the Vinext build passed and all 61 tests passed; TypeScript passed; the Vercel build passed after the documented local CSS-worker sandbox retry. Coverage includes rendered records for all 38 products, section anchors, citations, pending-formula states, and key identity/quantity distinctions, plus the existing inventory and commerce suite. Browser interaction and responsive visual QA were not performed. These checks do not replace scientific review. Generated Next environment-file churn was restored.
+
 ## Affiliate coupon inventory October 2 2026
 
 Added a signup-to-coupon-to-checkout local demo. Test application completion creates a persistent synthetic affiliate profile and sample inventory of the requested 10%, 15%, 20%, and 25% codes. `/partner/coupons` opens the new portal tab directly. Affiliates assign a code to a synthetic recipient, copy it, filter by status, or revoke it. Checkout requires an explicit simulated email verification and rejects unassigned, mismatched, revoked, and redeemed codes. Successful simulated payment consumes the coupon; cancellation and failure preserve it.

@@ -21,7 +21,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 - `/` — merchandising homepage
 - `/shop` — complete 38-item searchable/filterable catalog with supplied strengths, prices, mobile filters, and empty state
 - `/bundles` — five POW-supplied research bundles at fixed $200/$220 prices, with component lists and additions to the local demo cart
-- `/shop/reta-glp-3` — high-detail product record with purchase mode, cadence, quantity, cost basis, COA snapshot, research profile, handling/testing fields, external educational reference, cart feedback, and related products
+- `/shop/[slug]` — 38 individual research profiles with mechanisms, labeled study summaries, FAQs, source links, supplied vial specifications, and existing purchase controls; see [product research scope and outstanding records](docs/PRODUCT_RESEARCH.md)
 - `/categories/[slug]` — catalog category entry
 - `/coa` — searchable and filterable COA vault
 - `/research` and `/research/[slug]` — research library structure
