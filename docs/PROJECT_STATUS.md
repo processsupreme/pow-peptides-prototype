@@ -1,12 +1,20 @@
 # Project status and roadmap
 
+## Customer benefit framing October 3 2026
+
+Rewrote introductions for all 38 product families around customer interests and potential benefits. Added two scannable overview cards per listing, a visible evidence-level label beside purchase controls, and a short explanation of what the findings mean for the customer. Moved molecular facts and pathway diagrams below the overview, retained the detailed scientific chapters and primary sources, and updated navigation and metadata to match. The new overview uses the existing black/white/lime identity.
+
+Clinical findings remain scoped to the studied population; preclinical topics are identified as research interests. Negative and mixed findings remain visible. Unknown KLOW / KLOW PRO formulas and Prime 191 GH identity receive factual overview cards instead of invented outcome claims. Inventory, assets, commerce, dependencies, and hosting configuration are unchanged.
+
+Validation on the Mini: lint passed with 11 existing image-element warnings; the Vinext build and all 62 tests passed; the Next production build and TypeScript check passed. The Next CSS worker required the documented sandbox retry. Coverage verifies all 38 customer profiles, benefit-source destinations, evidence labels, and benefits preceding the scientific content. A local desktop browser check confirmed the GHK-Cu email gate, overview anchor, and rendered two-card layout; mobile and full commerce interactions were not re-tested. Generated Next environment-file churn was restored. This customer-copy revision is local, with no push or deployment performed.
+
 ## Product science depth revision October 3 2026
 
 Client feedback identified that the initial descriptions were too light. Reworked all 38 records to lead with substantive information: scientific fact panels, labeled pathway diagrams, three explanatory chapters per product, and study findings rather than only study titles. Product-specific introductions now appear by the purchase controls. Added eight research/reference records for 47 total, including primary mechanistic experiments and structural work. Removed duplicate research accordions and repeated evidence-boundary blocks. Price, quantity, inventory, cart behavior, assets, and hosting configuration are unchanged.
 
 Examples of added detail include GHK-Cu’s MMP/TIMP matrix-remodeling findings, SS-31’s cardiolipin–cytochrome c mechanism, retatrutide receptor comparisons and contextual trial results, Tesa / Ipa’s supplied mass proportions, and distinct molecular findings for the short peptides. KLOW / KLOW PRO still await POW formulas; no ingredients or mechanism were inferred. The missing formulas were requested while the rest of the work continued. See [research content scope](PRODUCT_RESEARCH.md).
 
-Local validation: lint passed with the 11 existing image-element warnings; the Vinext build and all 62 tests passed; TypeScript passed; the Vercel build passed after the known local CSS-worker sandbox retry. Automated coverage checks all 38 records and citations, explicit formula states, scientific details and study context, and the existing inventory and commerce behavior. Responsive visual QA and browser interactions were not performed. Generated Next environment-file churn was restored. This revision has not been pushed or deployed.
+Local validation: lint passed with the 11 existing image-element warnings; the Vinext build and all 62 tests passed; TypeScript passed; the Vercel build passed after the known local CSS-worker sandbox retry. Automated coverage checks all 38 records and citations, explicit formula states, scientific details and study context, and the existing inventory and commerce behavior. Responsive visual QA and browser interactions were not performed. Generated Next environment-file churn was restored. The science-depth revision was subsequently pushed and deployed as `a5543b5` on October 3 at the user’s explicit request. Vercel preview and production checks passed, and live Reta, GHK-Cu, and SS-31 content was verified. No merge into main occurred.
 
 ## Detailed product research October 3 2026
 

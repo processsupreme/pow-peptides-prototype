@@ -21,7 +21,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 - `/` — merchandising homepage
 - `/shop` — complete 38-item searchable/filterable catalog with supplied strengths, prices, mobile filters, and empty state
 - `/bundles` — five POW-supplied research bundles at fixed $200/$220 prices, with component lists and additions to the local demo cart
-- `/shop/[slug]` — 38 individual research profiles with product descriptions beside purchase controls, scientific fact panels, pathway diagrams, detailed chapters, contextual study findings, FAQs, source links, and supplied vial specifications; see [product research scope and outstanding records](docs/PRODUCT_RESEARCH.md)
+- `/shop/[slug]` — 38 customer-focused product profiles with plain-language introductions, potential-benefit cards and evidence context first, followed by scientific facts, pathway diagrams, detailed chapters, study findings, FAQs, source links, and supplied vial specifications; see [product research scope and outstanding records](docs/PRODUCT_RESEARCH.md)
 - `/categories/[slug]` — catalog category entry
 - `/coa` — searchable and filterable COA vault
 - `/research` and `/research/[slug]` — research library structure

@@ -164,7 +164,7 @@ test("publishes complete research guides and honest coming-soon states", async (
 test("renders a high-detail, evidence-bounded product record", async () => {
   const reta = (await (await render("/shop/reta-glp-3")).text()).replaceAll("<!-- -->", "");
   const water = (await (await render("/shop/bacteriostatic-water")).text()).replaceAll("<!-- -->", "");
-  assert.match(reta, /One molecule\. Three receptor pathways\./);
+  assert.match(reta, /Weight management\. A different angle on appetite\./);
   assert.match(reta, /What each receptor contributes/);
   assert.match(reta, /Where it fits among incretin compounds/);
   assert.match(reta, /Inside the[\s\S]*research file/);
@@ -567,10 +567,12 @@ test("exposes a direct coupon profile route and an explicitly simulated checkout
 test("every catalog product has a distinct research file with usable evidence links and section navigation", async () => {
   const { productResearch, researchSources } = await import("../app/product-research.ts");
   const { productScience } = await import("../app/product-science.ts");
+  const { productBenefits } = await import("../app/product-benefits.ts");
   const { products: inventory } = JSON.parse(await readFile(new URL("../app/pow-inventory.json", import.meta.url), "utf8"));
   assert.deepEqual(Object.keys(productResearch).sort(), Object.keys(inventory).sort());
   assert.deepEqual(Object.keys(productScience).sort(), Object.keys(inventory).sort());
-  assert.equal(new Set(Object.values(productResearch).map(profile => profile.headline)).size, 38);
+  assert.deepEqual(Object.keys(productBenefits).sort(), Object.keys(inventory).sort());
+  assert.equal(new Set(Object.values(productBenefits).map(profile => profile.headline)).size, 38);
   for (const [slug, science] of Object.entries(productScience)) {
     const response = await render(`/shop/${slug}`);
     assert.equal(response.status, 200, slug);
@@ -579,7 +581,7 @@ test("every catalog product has a distinct research file with usable evidence li
       assert.ok(html.includes(`href="#${section}"`), `${slug}: link to ${section}`);
       assert.equal(html.split(`id="${section}"`).length - 1, 1, `${slug}: unique ${section} destination`);
     }
-    for (const source of new Set([...science.chapters.flatMap(item => item.sources), ...science.studies.map(([id]) => id)])) {
+    for (const source of new Set([...productBenefits[slug].sources, ...science.chapters.flatMap(item => item.sources), ...science.studies.map(([id]) => id)])) {
       assert.ok(researchSources[source], `${slug}: source exists`);
       assert.ok(html.includes(`href="${researchSources[source].url.replaceAll("&", "&amp;")}"`), `${slug}: source link rendered`);
       assert.ok(html.includes(`id="source-${source}"`), `${slug}: reference destination exists`);
@@ -590,6 +592,10 @@ test("every catalog product has a distinct research file with usable evidence li
       assert.match(html, /Formula pending/);
     }
     assert.match(html, /<details><summary>/);
+    assert.ok(html.indexOf('class="pdp-description"') < html.indexOf('id="overview"'), `${slug}: plain-language introduction first`);
+    assert.ok(html.indexOf('id="overview"') < html.indexOf('aria-label="Research pathway"'), `${slug}: benefits before mechanisms`);
+    assert.ok(html.indexOf('aria-label="Benefit evidence"') < html.indexOf('id="mechanisms"'), `${slug}: evidence context travels with benefits`);
+    assert.ok(html.includes(productBenefits[slug].evidenceLabel.replaceAll('&', '&amp;')), `${slug}: visible evidence level`);
     assert.match(html, /No numerical analytical results are claimed/);
     assert.doesNotMatch(html.split('<section class="product-section compact">')[0], /Lot POW-XXXX|>Current COA<|Record mapped\./);
   }
