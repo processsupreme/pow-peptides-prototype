@@ -1,5 +1,15 @@
 # Project status and roadmap
 
+## Affiliate coupon inventory October 2 2026
+
+Added a signup-to-coupon-to-checkout local demo. Test application completion creates a persistent synthetic affiliate profile and sample inventory of the requested 10%, 15%, 20%, and 25% codes. `/partner/coupons` opens the new portal tab directly. Affiliates assign a code to a synthetic recipient, copy it, filter by status, or revoke it. Checkout requires an explicit simulated email verification and rejects unassigned, mismatched, revoked, and redeemed codes. Successful simulated payment consumes the coupon; cancellation and failure preserve it.
+
+Two codes per tier, merchandise eligibility, and larger-offer-only treatment of the welcome discount are labeled prototype assumptions awaiting final POW rules. Codes cannot prevent forwarding by themselves: live protection requires verified customer identity and atomic server-side redemption. All current state is editable local storage, restricted to synthetic recipient addresses, with no live service or commission automation. See [walkthrough, assumptions, and launch requirements](AFFILIATE_COUPONS.md). No inventory, hosting configuration, dependencies, or approved assets changed. This feature is local pending a separate push/deployment instruction.
+
+Validation on the Mini: lint passed with 11 existing image-element warnings; the Vinext build and all 59 tests passed; TypeScript passed; and the Vercel build passed after retrying outside the sandbox for its local CSS-worker port binding. Automated tests cover coupon lifecycle, recipient restrictions, one-use redemption, revocation, arithmetic, and rendered entry points. Browser interaction and responsive visual QA were not performed; live identity and redemption are not implemented.
+
+The preceding email-gate release (`a54bea5`) was pushed and promoted to the existing Vercel production site on October 2 at the user’s explicit request, with required checks passed and no merge into `main`.
+
 ## First-order email gate October 2 2026
 
 Added a required email-entry popout on shopping routes with POW's approved branding, a large 10% offer, native modal behavior, input validation, inert storefront content, and a mobile layout. Successful sample-email entry unlocks the current destination and activates a separate 10% merchandise discount in cart, checkout, payment preview, and confirmation. Access persists locally; successful simulated payment consumes the offer once. Cancel/failure retains it. The tariff popup waits for the email gate to finish. Email addresses are not saved or sent; no signup, consent, authentication, or email service has been connected.

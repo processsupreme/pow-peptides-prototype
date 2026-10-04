@@ -43,6 +43,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 - COA search, test-type/status filters, empty state, and file placeholder feedback
 - Customer skip, reschedule, cadence, quantity, pause/resume, cancel, reorder, and failed-payment states
 - Partner link copy/builder, masked customer list, ledger filters, payout history, and creative library
+- Signup creates a sample affiliate coupon profile at `/partner/coupons`: 10%, 15%, 20%, and 25% inventories, recipient assignment, copy/revoke controls, and one-use checkout with simulated email verification. See [coupon walkthrough and production protections](docs/AFFILIATE_COUPONS.md).
 - Keyboard focus styles, semantic controls, safe table overflow, and reduced-motion behavior
 
 ## Intentionally untouched production integrations

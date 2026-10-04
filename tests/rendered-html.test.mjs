@@ -468,3 +468,98 @@ test("applies ten percent to first-order merchandise with cent rounding and exis
   assert.equal(demoCheckoutTotals(1040, true).total, 982.8);
   assert.equal(demoCheckoutTotals(200, false).total, 210);
 });
+
+// Coupon lifecycle uses synthetic addresses and local storage only.
+const coupons = await import("../app/affiliate-coupons.ts");
+function sampleInventory() {
+  let sequence = 0;
+  return coupons.completeAffiliateSignup(coupons.emptyCouponStore, () => `sample-${++sequence}`);
+}
+function issuedInventory(percent = 25) {
+  const state = sampleInventory();
+  const coupon = state.coupons.find(item => item.percent === percent);
+  return { state: coupons.issueCoupon(state, state.profile.id, coupon.id, " Researcher@Example.com "), code: coupon.code, id: coupon.id };
+}
+
+test("affiliate signup creates all four approved tiers once without replenishing", () => {
+  const state = sampleInventory();
+  assert.deepEqual([...new Set(state.coupons.map(item => item.percent))], [10, 15, 20, 25]);
+  assert.equal(state.coupons.length, 8);
+  assert.equal(new Set(state.coupons.map(item => item.code)).size, 8);
+  for (const tier of coupons.COUPON_TIERS) assert.equal(state.coupons.filter(item => item.percent === tier && item.status === "available").length, 2);
+  const {state: issued} = issuedInventory();
+  assert.equal(coupons.completeAffiliateSignup(issued, () => { throw Error("Must not refill"); }), issued);
+  assert.deepEqual(coupons.parseCouponStore(JSON.stringify(issued)), issued);
+});
+
+test("codes require assignment, correct ownership, and a fixed synthetic recipient", () => {
+  const initial = sampleInventory();
+  const first = initial.coupons[0];
+  assert.ok(coupons.validateCoupon(initial, first.code, "researcher@example.com", "researcher@example.com").error);
+  assert.throws(() => coupons.issueCoupon(initial, "someone-else", first.id, "researcher@example.com"));
+  assert.throws(() => coupons.issueCoupon(initial, initial.profile.id, first.id, "real@customer.com"));
+  const {state, id, code} = issuedInventory();
+  assert.equal(state.coupons.find(item => item.id === id).recipientEmail, "researcher@example.com");
+  assert.throws(() => coupons.issueCoupon(state, state.profile.id, id, "other@example.com"));
+  assert.ok(coupons.validateCoupon(state, code, "researcher@example.com", "").error);
+  assert.ok(coupons.validateCoupon(state, code, "other@example.com", "other@example.com").error);
+  assert.ok(coupons.validateCoupon(state, code, "other@example.com", "researcher@example.com").error);
+  assert.equal(coupons.validateCoupon(state, ` ${code.toLowerCase()} `, "RESEARCHER@example.com", "researcher@example.com").coupon.id, id);
+});
+
+test("coupon validation and canceled previews preserve inventory; approval redeems once", () => {
+  const {state, code, id} = issuedInventory();
+  const original = JSON.stringify(state);
+  for(let i=0;i<3;i++) assert.ok(coupons.validateCoupon(state, code, "researcher@example.com", "researcher@example.com").coupon);
+  assert.equal(JSON.stringify(state), original);
+  assert.throws(() => coupons.redeemCoupon(state, code, "other@example.com", "other@example.com", "ORDER-1"));
+  assert.throws(() => coupons.redeemCoupon(state, code, "researcher@example.com", "researcher@example.com", ""));
+  const redeemed = coupons.redeemCoupon(state, code, "researcher@example.com", "researcher@example.com", "ORDER-1");
+  const coupon = redeemed.coupons.find(item => item.id === id);
+  assert.equal(coupon.status, "redeemed"); assert.equal(coupon.orderId, "ORDER-1");
+  assert.equal(coupon.affiliateId, state.profile.id);
+  assert.throws(() => coupons.redeemCoupon(redeemed, code, "researcher@example.com", "researcher@example.com", "ORDER-2"));
+  assert.throws(() => coupons.revokeCoupon(redeemed, state.profile.id, id));
+});
+
+test("revocation prevents checkout and does not refill inventory", () => {
+  const {state, code, id} = issuedInventory();
+  assert.throws(() => coupons.revokeCoupon(state, "someone-else", id));
+  const revoked = coupons.revokeCoupon(state, state.profile.id, id);
+  assert.equal(revoked.coupons.length, state.coupons.length);
+  assert.equal(revoked.coupons.find(item => item.id === id).status, "revoked");
+  assert.ok(coupons.validateCoupon(revoked, code, "researcher@example.com", "researcher@example.com").error);
+  assert.throws(() => coupons.issueCoupon(revoked, state.profile.id, id, "researcher@example.com"));
+});
+
+test("unreadable or inconsistent inventories fail instead of silently granting new codes", () => {
+  for(const raw of ["broken", "{}", "null", JSON.stringify({profile: null, coupons: [{}]})]) assert.throws(() => coupons.parseCouponStore(raw));
+  const state = sampleInventory();
+  state.coupons.push(state.coupons[0]);
+  assert.throws(() => coupons.parseCouponStore(JSON.stringify(state)));
+});
+
+test("all approved affiliate discounts work without stacking with the welcome offer", () => {
+  for(const tier of [10,15,20,25]) {
+    assert.deepEqual(coupons.selectOrderDiscount(true, tier), {source: "affiliate", percent: tier});
+    assert.deepEqual(demoCheckoutTotals(200, true, tier), demoCheckoutTotals(200, false, tier));
+    assert.equal(demoCheckoutTotals(200, true, tier).discount, 2*tier);
+  }
+  assert.deepEqual(demoCheckoutTotals(200, true, 25), {discount:50,tariff:7.5,shipping:0,total:157.5});
+  assert.deepEqual(demoCheckoutTotals(19.99, false, 15), {discount:3,tariff:.85,shipping:12,total:29.84});
+  assert.equal(demoCheckoutTotals(200, true, 99).discount, 20);
+  assert.deepEqual(coupons.selectOrderDiscount(false), {source:"none",percent:0});
+});
+
+test("exposes a direct coupon profile route and an explicitly simulated checkout identity step", async () => {
+  const portal = (await (await render("/partner/coupons")).text()).replaceAll("<!-- -->", "");
+  assert.match(portal, /Give a little/);
+  assert.match(portal, /ONE CUSTOMER/);
+  assert.match(portal, /Your coupon inventory starts at signup/);
+  assert.match(portal, /href="\/partners#apply"/);
+  const checkout = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
+  assert.match(checkout, /Have an affiliate code/);
+  assert.match(checkout, /Start test email verification/);
+  assert.match(checkout, /No verification email is sent/);
+  assert.match(checkout, /Offers do not stack/);
+});
