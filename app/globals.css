@@ -363,3 +363,35 @@
 .research-nav a:focus-visible,.research-faq summary:focus-visible,.research-sources a:focus-visible,.evidence-list a:focus-visible,.doc-grid a:focus-visible{outline:3px solid #627d00;outline-offset:5px}
 @media(max-width:900px){.research-nav{gap:10px 18px}.research-nav>span{width:100%}.research-reading{grid-template-columns:1fr;gap:40px}.evidence-list article{grid-template-columns:160px 1fr;gap:24px}}
 @media(max-width:600px){.research-anchor{scroll-margin-top:80px}.research-nav{padding:18px 5%;gap:6px 18px}.research-nav a{font-size:12px}.research-expansion,.research-reading{padding-left:5%;padding-right:5%}.mechanism-section{padding-top:40px}.mechanism-grid{grid-template-columns:1fr}.mechanism-grid article{padding:24px}.evidence-list article{grid-template-columns:1fr;gap:16px}.evidence-meta{flex-direction:row;align-items:center;justify-content:space-between}.evidence-meta b{font-size:22px}.evidence-boundary{padding:24px}.research-reading{padding-top:40px;padding-bottom:40px}.research-sources{padding:24px}.research-faq summary{font-size:15px}}
+
+/* Expanded product science: compact facts, readable chapters, contextual pathways. */
+.pdp-copy .pdp-description{font-size:16px;line-height:1.8;color:var(--ink)}
+.pdp-copy .pdp-unit-details{font-size:12px;line-height:1.65;color:var(--muted);border-left:3px solid var(--lime);padding-left:12px}
+.science-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0;border:3px solid var(--ink);background:var(--paper)}
+.science-facts>div{padding:26px;border-right:2px solid var(--ink)}
+.science-facts>div:last-child{border-right:0}
+.science-facts dt{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.science-facts dd{margin:0;font-size:22px;line-height:1.35;font-weight:800;overflow-wrap:anywhere}
+.science-pathway{background:var(--ink);color:white;margin-top:24px;padding:26px}
+.science-pathway>span{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--lime);text-transform:uppercase}
+.science-pathway ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0;margin:24px 0 0;list-style:none;gap:36px}
+.science-pathway li{position:relative;padding-right:25px}
+.science-pathway small{display:block;color:#b6c497;font-size:12px;margin-bottom:10px}
+.science-pathway b{font-size:18px;line-height:1.5}
+.science-pathway i{position:absolute;right:-18px;top:22px;color:var(--lime);font-size:28px;font-style:normal}
+.science-map-note{font-size:12px;line-height:1.7;margin:18px 0 0;max-width:950px}
+.chapter-sources{font-size:12px!important;line-height:1.7!important;margin-top:16px!important;color:#536237}
+.chapter-sources a{text-underline-offset:3px}
+.product-story>.chapter-sources{color:var(--ink);max-width:1100px}
+.science-chapters{border-top:2px solid var(--ink)}
+.science-chapters article{display:grid;grid-template-columns:minmax(210px,.75fr) minmax(0,1.65fr);gap:50px;padding:36px 0;border-bottom:1px solid #d5dbcd}
+.science-chapter-title>span{display:block;color:#627b26;font-size:13px;font-weight:900;margin-bottom:16px}
+.science-chapter-title h3{font-size:26px;line-height:1.15;letter-spacing:-.025em;margin:0;max-width:340px}
+.science-chapters article>div>p{font-size:17px;line-height:1.85;margin:0;max-width:850px}
+.research-documentation{margin-top:32px;border-top:1px solid #58604a}
+.research-documentation details{padding:20px 0;border-bottom:1px solid #58604a}
+.research-documentation summary{cursor:pointer;font-size:17px;font-weight:800}
+.research-documentation p{font-size:14px;color:#d3d7ca;line-height:1.8;max-width:850px}
+.research-documentation summary:focus-visible,.chapter-sources a:focus-visible{outline:3px solid #96bd1a;outline-offset:5px}
+@media(max-width:850px){.science-chapters article{grid-template-columns:1fr;gap:20px}.science-chapter-title h3{max-width:none}.science-facts>div{padding:20px}.science-facts dd{font-size:19px}}
+@media(max-width:600px){.science-facts{grid-template-columns:1fr}.science-facts>div{border-right:0;border-bottom:2px solid var(--ink)}.science-facts>div:last-child{border-bottom:0}.science-pathway ol{grid-template-columns:1fr;gap:35px}.science-pathway li{padding-right:0}.science-pathway i{position:static;display:block;line-height:1;transform:rotate(90deg);transform-origin:left center;margin:12px 0 -16px 10px}.science-chapters article>div>p{font-size:16px}.science-chapter-title h3{font-size:24px}}

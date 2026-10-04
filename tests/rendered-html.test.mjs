@@ -165,8 +165,8 @@ test("renders a high-detail, evidence-bounded product record", async () => {
   const reta = (await (await render("/shop/reta-glp-3")).text()).replaceAll("<!-- -->", "");
   const water = (await (await render("/shop/bacteriostatic-water")).text()).replaceAll("<!-- -->", "");
   assert.match(reta, /One molecule\. Three receptor pathways\./);
-  assert.match(reta, /Why it is studied\./);
-  assert.match(reta, /What sets it apart\./);
+  assert.match(reta, /What each receptor contributes/);
+  assert.match(reta, /Where it fits among incretin compounds/);
   assert.match(reta, /Inside the[\s\S]*research file/);
   assert.match(reta, /Product specification/);
   assert.match(reta, /\$8\.00 \/ mg/);
@@ -566,10 +566,12 @@ test("exposes a direct coupon profile route and an explicitly simulated checkout
 
 test("every catalog product has a distinct research file with usable evidence links and section navigation", async () => {
   const { productResearch, researchSources } = await import("../app/product-research.ts");
+  const { productScience } = await import("../app/product-science.ts");
   const { products: inventory } = JSON.parse(await readFile(new URL("../app/pow-inventory.json", import.meta.url), "utf8"));
   assert.deepEqual(Object.keys(productResearch).sort(), Object.keys(inventory).sort());
+  assert.deepEqual(Object.keys(productScience).sort(), Object.keys(inventory).sort());
   assert.equal(new Set(Object.values(productResearch).map(profile => profile.headline)).size, 38);
-  for (const [slug, profile] of Object.entries(productResearch)) {
+  for (const [slug, science] of Object.entries(productScience)) {
     const response = await render(`/shop/${slug}`);
     assert.equal(response.status, 200, slug);
     const html = (await response.text()).replaceAll("<!-- -->", "");
@@ -577,13 +579,13 @@ test("every catalog product has a distinct research file with usable evidence li
       assert.ok(html.includes(`href="#${section}"`), `${slug}: link to ${section}`);
       assert.equal(html.split(`id="${section}"`).length - 1, 1, `${slug}: unique ${section} destination`);
     }
-    for (const { source } of profile.evidence) {
+    for (const source of new Set([...science.chapters.flatMap(item => item.sources), ...science.studies.map(([id]) => id)])) {
       assert.ok(researchSources[source], `${slug}: source exists`);
       assert.ok(html.includes(`href="${researchSources[source].url.replaceAll("&", "&amp;")}"`), `${slug}: source link rendered`);
       assert.ok(html.includes(`id="source-${source}"`), `${slug}: reference destination exists`);
       assert.equal(new URL(researchSources[source].url).protocol, "https:");
     }
-    if (!profile.evidence.length) {
+    if (!science.studies.length) {
       assert.ok(["klow", "klow-pro"].includes(slug));
       assert.match(html, /Formula pending/);
     }
@@ -599,10 +601,32 @@ test("product research preserves unresolved identities and separates ingredient 
   assert.match(await page("tesamorelin-ipamorelin"), /13 mg tesamorelin plus 3 mg ipamorelin/);
   assert.match(await page("cjc-1295-ipamorelin"), /Does this contain DAC/);
   assert.match(await page("bpc-tb-500"), /does not establish a 10 mg \/ 10 mg split/);
-  assert.match(await page("cortexin"), /does not resolve the scientific identity/);
+  assert.match(await page("cortexin"), /composition and source of POW material/i);
   assert.match(await page("prime-191-gh"), /without inventing a conversion/);
   assert.match(await page("snap-8"), /Manufacturer data/);
   assert.match(await page("oxytocin"), /no significant benefit/);
   assert.match(await page("dsip"), /without improved subjective sleep quality/);
   assert.match(await page("klow-pro"), /POW has not yet supplied the formulation difference/);
+});
+
+
+test("product descriptions explain concrete science and study findings instead of repeating generic cautions", async () => {
+  const page = async slug => (await (await render(`/shop/${slug}`)).text()).replaceAll("<!-- -->", "");
+  const reta = await page("reta-glp-3");
+  const ghk = await page("ghk-cu");
+  const ss = await page("ss-31");
+  const tesa = await page("tesamorelin-ipamorelin");
+  assert.match(reta, /338 adults/);
+  assert.match(reta, /−8.7% to −24.2%/);
+  assert.match(reta, /cry[o]-electron microscopy/);
+  assert.match(ghk, /MMP-2/);
+  assert.match(ghk, /TIMP-1 and TIMP-2/);
+  assert.match(ss, /peroxidase/);
+  assert.match(ss, /cristae/);
+  assert.match(tesa, /81.25% tesamorelin and 18.75% ipamorelin/);
+  assert.match(tesa, /does not convert a single-ingredient trial into a study of the mixture/);
+  assert.match(reta, /class="pdp-description"/);
+  assert.match(reta, /aria-label="Research pathway"/);
+  assert.equal(reta.split('class="evidence-boundary"').length - 1, 1);
+  assert.doesNotMatch(reta, /What the record does not prove/);
 });

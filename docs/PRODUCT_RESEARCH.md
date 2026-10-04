@@ -1,26 +1,26 @@
 # Product research pages
 
-Prepared October 3, 2026. All 38 product families now have individual educational profiles rather than a category-based narrative fallback. These are original prototype drafts awaiting scientific and POW product-label review.
+Revised October 3, 2026 following client feedback on scientific depth. All 38 product families now have individual educational profiles rather than a category-based narrative fallback. These are original prototype drafts awaiting scientific and POW product-label review.
 
 ## Reference and implementation
 
-The user’s open Chrome reference was [Peptide Plugs’ HALO product page](https://peptideplugs.com/product/halo60/). Its overview, component explanations, mechanism discussion, research context, specifications, and documentation structure informed the requested depth. No competitor prose, photographs, formulas, prices, lab results, purity numbers, storage instructions, or treatment claims were imported. HALO is not added to POW’s catalog.
+The initial open Chrome reference was [Peptide Plugs’ HALO product page](https://peptideplugs.com/product/halo60/). Its overview, component explanations, mechanism discussion, research context, specifications, and documentation structure informed the requested depth. No competitor prose, photographs, formulas, prices, lab results, purity numbers, storage instructions, or treatment claims were imported. HALO is not added to POW’s catalog. The revision also directly compared overlapping [retatrutide](https://peptideplugs.com/product/reta-glp3-rt-10mg/), [SS-31](https://peptideplugs.com/product/ss-31-10mg/), and [tesamorelin](https://peptideplugs.com/product/tesamorelin-10mg/) pages. Their specific target explanations and compound comparisons exposed the first draft’s overemphasis on general limitations. Competitor pages are structural references, not scientific authorities.
 
-`app/product-research.ts` contains 38 explicit profiles and 39 linked research/reference records. `app/ProductResearch.tsx` renders mechanisms, evidence summaries, FAQs, and references. `app/POWApp.tsx` retains the purchase controls and inventory-backed specification, with six section anchors. Product metadata uses each profile’s headline. New styles preserve the established POW black/white/lime identity and collapse the research columns on smaller screens.
+`app/product-research.ts` contains introductions, evidence notes, FAQs, and 47 research/reference records. `app/product-science.ts` contains 38 explicit scientific profiles: factual summaries, labeled pathway diagrams, three explanatory chapters each, and contextual study findings. `app/ProductResearch.tsx` renders these records with citations adjacent to each chapter. Product-specific introductions now appear beside the purchase controls. `app/POWApp.tsx` retains the purchase controls and inventory-backed specification, with six section anchors. Product metadata uses each profile’s headline. New styles preserve the established POW black/white/lime identity and collapse the research columns on smaller screens.
 
 Each profile includes:
 
-- An original introduction, research focus, and distinction from related materials.
-- Two mechanism or formulation questions, with source-linked context.
-- Dated study summaries identifying human, animal, cell, mechanistic, or manufacturer evidence.
-- Product-specific limits and FAQs, plus handling and analytical-documentation questions.
+- An original introduction, three factual summaries, and a labeled pathway or research-context diagram.
+- Three explanatory chapters describing molecular identity, pathway biology, study methods, results, and meaningful compound comparisons.
+- Dated study findings identifying human, animal, cell, mechanistic, or manufacturer evidence; numerical results retain population, comparator, time frame, and relevant adverse-event context.
+- One product-specific evidence note, FAQs, and a separate product-documentation section. Repeated boundary paragraphs and duplicate research accordions were removed.
 - Direct primary-source links or explicitly identified official references, manufacturer data, and comparator labels.
 
 KLOW and KLOW PRO intentionally have no attributed ingredient study: the supplied inventory does not identify their formulas. Their pages explain the precise missing specification instead. Other pending identities are qualified rather than silently inferred. The existing optional PepGuide links remain secondary educational resources; they are not claimed as reviewed primary evidence.
 
 ## Scientific scope
 
-This is a selected educational bibliography, not a systematic review or a statement of the latest regulatory/development status. A source year identifies the study milestone, not the compound’s current phase. No dosing, administration, stacking protocol, or consumer treatment recommendation is included. Clinical evidence is scoped to the actual population and preparation; cell studies using human cells are labeled cell studies. Ingredient studies do not establish blend synergy. Mixed or negative results are included for DSIP, oxytocin, thymosin alpha-1, and VIP.
+This is a selected educational bibliography, not a systematic review or a statement of the latest regulatory/development status. A source year identifies the study milestone, not the compound’s current phase. No dosing, administration, stacking protocol, or consumer treatment recommendation is included. New primary-source research adds retatrutide discovery/structures, BPC-157 vascular signaling, tesamorelin liver-fat outcomes, SS-31 ischemia experiments, thymosin alpha-1 dendritic-cell work, and VIP signaling experiments. IUPHAR supplies explicitly labeled receptor-reference context for oxytocin. Original abstracts were checked through NCBI PubMed and its official EFetch API. Research diagrams are summaries of identified experimental contexts, not guaranteed human effects; the three metabolic blend ingredients are shown in parallel, not as a proven sequential pathway. Clinical evidence is scoped to the actual population and preparation; cell studies using human cells are labeled cell studies. Ingredient studies do not establish blend synergy. Mixed or negative results are included for DSIP, oxytocin, thymosin alpha-1, and VIP.
 
 SNAP-8 uses the original Lipotec technical sheet, explicitly marked manufacturer data. B12 uses NIH’s official reference. Water and Prime 191 GH use official comparator medicine labels strictly for identity/context, not as POW specifications. Thymosin alpha-1’s TESTS paper has a published correction ([BMJ correction](https://www.bmj.com/content/389/bmj.r1098)); the page states the qualitative trial conclusion without reproducing the corrected numerical hazard ratio.
 
@@ -52,4 +52,4 @@ Compare `/shop/ghk-cu`, `/shop/snap-8`, `/shop/dsip`, `/shop/tesamorelin-ipamore
 
 ## Verification and delivery
 
-Automated coverage renders every catalog product, checks section destinations and linked references, distinguishes pending formulas from cited profiles, and preserves key identity/quantity qualifications. Existing inventory and commerce tests remain in place. Checks and coverage limits are recorded in `PROJECT_STATUS.md` after completion. Automated HTML checks do not certify scientific accuracy or replace qualified review. This work is local until a separate release instruction; the existing Vercel Git connection can trigger hosted builds on push.
+Automated coverage renders every catalog product, checks section destinations and linked references, distinguishes pending formulas from cited profiles, and preserves key identity/quantity qualifications. Existing inventory and commerce tests remain in place. Checks and coverage limits are recorded in `PROJECT_STATUS.md` after completion. Automated HTML checks do not certify scientific accuracy or replace qualified review. The initial version was pushed and deployed as `0a4da9f` at the user’s request. This deeper content revision is local until a separate release instruction; the existing Vercel Git connection can trigger hosted builds on push.

@@ -1,10 +1,18 @@
 # Project status and roadmap
 
+## Product science depth revision October 3 2026
+
+Client feedback identified that the initial descriptions were too light. Reworked all 38 records to lead with substantive information: scientific fact panels, labeled pathway diagrams, three explanatory chapters per product, and study findings rather than only study titles. Product-specific introductions now appear by the purchase controls. Added eight research/reference records for 47 total, including primary mechanistic experiments and structural work. Removed duplicate research accordions and repeated evidence-boundary blocks. Price, quantity, inventory, cart behavior, assets, and hosting configuration are unchanged.
+
+Examples of added detail include GHK-Cu’s MMP/TIMP matrix-remodeling findings, SS-31’s cardiolipin–cytochrome c mechanism, retatrutide receptor comparisons and contextual trial results, Tesa / Ipa’s supplied mass proportions, and distinct molecular findings for the short peptides. KLOW / KLOW PRO still await POW formulas; no ingredients or mechanism were inferred. The missing formulas were requested while the rest of the work continued. See [research content scope](PRODUCT_RESEARCH.md).
+
+Local validation: lint passed with the 11 existing image-element warnings; the Vinext build and all 62 tests passed; TypeScript passed; the Vercel build passed after the known local CSS-worker sandbox retry. Automated coverage checks all 38 records and citations, explicit formula states, scientific details and study context, and the existing inventory and commerce behavior. Responsive visual QA and browser interactions were not performed. Generated Next environment-file churn was restored. This revision has not been pushed or deployed.
+
 ## Detailed product research October 3 2026
 
 All 38 product pages now have original, product-specific research narratives, mechanism sections, evidence summaries, FAQs, and selected primary-source links. Six section links make the longer records navigable. Sources distinguish cell, animal, human, manufacturer, and comparator evidence. Unconfirmed formulas and identities remain explicit; no competitor claims or test results were copied. Product-page COA links now expose the pending documentation state rather than imply an available certificate. All supplied inventory and purchase behavior are preserved. See [research scope, references, and outstanding specifications](PRODUCT_RESEARCH.md).
 
-Scientific and POW labeling review, actual lot documentation, and the noted formulation details remain outstanding. No production integrations or hosting configuration changed. This content update is local, with no push, merge, or deployment.
+Scientific and POW labeling review, actual lot documentation, and the noted formulation details remain outstanding. No production integrations or hosting configuration changed. Subsequently pushed and deployed at the user’s request as `0a4da9f` on October 3. Preview and production checks passed; live Reta, GHK-Cu, and KLOW PRO pages returned HTTP 200 with the revised sections. The existing production domain was retained, without merging into `main`.
 
 Validation on the Mini: lint passed with 11 existing image-element warnings; the Vinext build passed and all 61 tests passed; TypeScript passed; the Vercel build passed after the documented local CSS-worker sandbox retry. Coverage includes rendered records for all 38 products, section anchors, citations, pending-formula states, and key identity/quantity distinctions, plus the existing inventory and commerce suite. Browser interaction and responsive visual QA were not performed. These checks do not replace scientific review. Generated Next environment-file churn was restored.
 
