@@ -4,6 +4,7 @@ import test from "node:test";
 import { FIRST_ORDER_OFFER_KEY, FIRST_ORDER_OFFER_COOKIE, claimFirstOrderOffer, readOfferStatus, redeemFirstOrderOffer, isShoppingRoute, resilientOfferStorage } from "../app/first-order-offer.ts";
 import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bundles.ts";
 import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
+import { createManualInvoice, reportManualPayment, parseManualInvoice, invoiceText, POW_PAYMENT_PHONE } from "../app/manual-invoice.ts";
 
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
 workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
@@ -219,19 +220,76 @@ test("ships a connected, explicitly simulated commerce loop", async () => {
   assert.match(source, /addCartItem\(\{id:/);
 });
 
-test("presents Venmo-only checkout as an unconnected preview", async () => {
+test("offers both manual payment methods without claiming an order or payment was sent", async () => {
   const html = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
-  assert.match(html, /Pay with Venmo/);
-  assert.match(html, /Only payment option/);
-  assert.match(html, /Venmo setup pending/);
+  assert.match(html, /Venmo \+ Zelle/);
+  assert.match(html, /name="paymentMethod"[^>]*value="zelle"/);
+  assert.match(html, /name="paymentMethod"[^>]*value="venmo"/);
   assert.match(html, /Fill sample details/);
-  assert.match(html, /A Venmo username alone does not activate checkout/);
-  assert.match(html, /<dialog[^>]*aria-labelledby="venmo-preview-title"/);
-  assert.match(html, /Approve demo payment/);
-  assert.match(html, /Cancel and return to checkout/);
-  assert.match(html, /Try payment-not-completed example/);
-  assert.match(html, /disabled=""[^>]*>Preview Venmo payment/);
-  assert.doesNotMatch(html, /4242|DEMO PAYMENT TOKEN|name="(?:card|cvv|venmoPassword)"|https:\/\/(?:www\.)?venmo\.com\/u\//);
+  assert.match(html, /do not send money for a sample invoice/);
+  assert.match(html, /disabled=""[^>]*>Review sample invoice/);
+  assert.match(html, /Your cart and discounts remain available/);
+  assert.doesNotMatch(html, /Approve demo payment|Only payment option|venmo-preview-title|4242|name="(?:card|cvv|venmoPassword)"/);
+});
+
+const invoiceId = "a3c79b14-795b-47fd-875a-4f0be017d036";
+const invoiceDate = "2026-10-04T20:00:00.000Z";
+const invoiceInput = { lines: [{ name: "Example vial", strength: "10 mg", qty: 1, unitPrice: 80 }], method: "zelle", discountPercent: 10, discountLabel: "10% first-order offer" };
+
+test("freezes invoice prices and matches cart arithmetic for each method and discount", () => {
+  for (const method of ["venmo", "zelle"]) for (const discountPercent of [0, 10, 15, 20, 25]) {
+    for (const unitPrice of [19.99, 80, 199, 200, 220]) {
+      const input = { ...invoiceInput, method, discountPercent, lines: [{ ...invoiceInput.lines[0], unitPrice }] };
+      const invoice = createManualInvoice(input, invoiceId, invoiceDate);
+      const expected = demoCheckoutTotals(unitPrice, false, discountPercent);
+      for (const key of ["discount", "tariff", "shipping", "total"]) assert.equal(invoice[key], expected[key]);
+      input.lines[0].qty = 5;
+      assert.equal(invoice.lines[0].qty, 1);
+      assert.equal(invoice.status, "awaiting_payment");
+      assert.deepEqual(parseManualInvoice(JSON.stringify(invoice)), invoice);
+    }
+  }
+  assert.notEqual(createManualInvoice(invoiceInput, invoiceId, invoiceDate).reference,
+    createManualInvoice(invoiceInput, "b3c79b14-795b-47fd-875a-4f0be017d036", invoiceDate).reference);
+});
+
+test("payment reports remain unverified and repeated reports keep the same reference and total", () => {
+  const invoice = createManualInvoice(invoiceInput, invoiceId, invoiceDate);
+  const reported = reportManualPayment(invoice);
+  assert.equal(invoice.status, "awaiting_payment");
+  assert.equal(reported.status, "payment_reported");
+  assert.equal(reported.reference, invoice.reference);
+  assert.equal(reported.total, invoice.total);
+  assert.deepEqual(reportManualPayment(reported), reported);
+  assert.deepEqual(parseManualInvoice(JSON.stringify(reported)), reported);
+});
+
+test("invoice restoration rejects invalid totals, quantities, and invented paid states", () => {
+  const invoice = createManualInvoice(invoiceInput, invoiceId, invoiceDate);
+  assert.equal(parseManualInvoice(null), null);
+  for (const raw of ["not-json", "null", "{}", JSON.stringify({ ...invoice, total: .01 }), JSON.stringify({ ...invoice, status: "paid" }), JSON.stringify({ ...invoice, lines: [{ ...invoice.lines[0], qty: -1 }] })]) assert.equal(parseManualInvoice(raw), null);
+  assert.throws(() => createManualInvoice({ ...invoiceInput, lines: [] }, invoiceId, invoiceDate));
+  assert.throws(() => createManualInvoice({ ...invoiceInput, discountPercent: 90 }, invoiceId, invoiceDate));
+  assert.throws(() => createManualInvoice({ ...invoiceInput, method: "wire" }, invoiceId, invoiceDate));
+});
+
+test("stored invoice data excludes customer fields and exports carry the sample warning", () => {
+  const invoice = createManualInvoice({ ...invoiceInput, email: "sample@example.com", address: "123 Example Street", lines: [{ ...invoiceInput.lines[0], email: "sample@example.com" }] }, invoiceId, invoiceDate);
+  assert.doesNotMatch(JSON.stringify(invoice), /sample@example|123 Example/);
+  const restored = parseManualInvoice(JSON.stringify({ ...invoice, customer: "extra private field" }));
+  assert.equal(restored.customer, undefined);
+  assert.equal(POW_PAYMENT_PHONE, "6194393459");
+  assert.match(invoiceText(invoice), /SAMPLE INVOICE — DO NOT PAY/);
+  assert.match(invoiceText(invoice), /\(619\) 439-3459/);
+  assert.ok(invoiceText(invoice).includes(invoice.reference));
+  assert.match(invoiceText(reportManualPayment(invoice)), /awaiting POW verification/);
+});
+
+test("manual checkout never consumes offers, clears carts, or claims verification on a report", async () => {
+  const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
+  const checkout = source.slice(source.indexOf("function CheckoutView()"), source.indexOf("function TrackingView()"));
+  assert.doesNotMatch(checkout, /redeemCoupon|offer\.consume|cart\.set\(\[\]\)/);
+  assert.match(checkout, /reportManualPayment/);
 });
 
 test("calculates the demo tariff on merchandise once, excluding shipping", () => {
@@ -252,7 +310,7 @@ test("discloses the fictional tariff cameo and fee before the payment preview", 
   assert.match(html, /trump-comic-cutout\.png/);
   assert.match(html, /Replay the announcement/);
   assert.match(html, /Tariff fee · 5% \(demo\)/);
-  assert.match(html, /Includes a 5% merchandise surcharge/);
+  assert.match(html, /Merchandise after discount/);
   const cart = await (await render("/cart")).text();
   assert.match(cart, /Tariff fee · 5% \(demo\)/);
 });

@@ -34,6 +34,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 ## Prototype interactions
 
 - Required email popout on shopping pages, with the requested 10% first-order offer applied to demo cart and checkout; returning access and one-time use are remembered in browser storage with a cookie fallback, and emails are not stored or sent. Native form submission also unlocks access when client scripts are unavailable. See [email offer walkthrough](docs/EMAIL_OFFER.md).
+- Venmo/Zelle invoice checkout with the supplied POW payment contact, itemized sample invoices, unique memo references, copy/print tools, and a payment-reported state awaiting manual verification. Live order intake and recipient details are still needed; see [manual payment flow](docs/VENMO_PREVIEW.md).
 - Mobile navigation and responsive layouts down to 320 px
 - Referral capture in local storage before mock verification
 - Gate form, OTP error, resend, success, reset, and Google demonstration
@@ -43,7 +44,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 - COA search, test-type/status filters, empty state, and file placeholder feedback
 - Customer skip, reschedule, cadence, quantity, pause/resume, cancel, reorder, and failed-payment states
 - Partner link copy/builder, masked customer list, ledger filters, payout history, and creative library
-- Signup creates a sample affiliate coupon profile at `/partner/coupons`: 10%, 15%, 20%, and 25% inventories, recipient assignment, copy/revoke controls, and one-use checkout with simulated email verification. See [coupon walkthrough and production protections](docs/AFFILIATE_COUPONS.md).
+- Signup creates a sample affiliate coupon profile at `/partner/coupons`: 10%, 15%, 20%, and 25% inventories, recipient assignment, copy/revoke controls, and recipient validation at checkout with simulated email verification; manual payment reports leave codes issued. See [coupon walkthrough and production protections](docs/AFFILIATE_COUPONS.md).
 - Keyboard focus styles, semantic controls, safe table overflow, and reduced-motion behavior
 
 ## Intentionally untouched production integrations

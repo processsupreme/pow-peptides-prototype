@@ -35,6 +35,6 @@ export default function CheckoutCoupon({ email, verifiedEmail, onVerify, applied
     }}>Apply code</button></div>
     {appliedCode && <div className="coupon-applied"><span><b>{percent ? `${percent}% affiliate discount applied` : "Code needs attention"}</b><code>{appliedCode}</code></span><button type="button" onClick={() => { onRemove(); setNotice("Affiliate code removed. It remains available to its assigned customer."); }}>Remove</button></div>}
     <p role="status" aria-live="polite">{error || notice}</p>
-    <small>Prototype default: the larger of your first-order offer or affiliate discount applies. Offers do not stack. Codes are marked used only after demo payment approval.</small>
+    <small>Prototype default: the larger of your first-order offer or affiliate discount applies. Offers do not stack. Payment reports do not use a code; redemption requires a confirmed order.</small>
   </section>;
 }

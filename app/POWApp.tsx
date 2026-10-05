@@ -9,7 +9,9 @@ import { productBenefits } from "./product-benefits";
 import TariffNotice from "./TariffNotice";
 import AffiliateCoupons from "./AffiliateCoupons";
 import CheckoutCoupon from "./CheckoutCoupon";
-import { completeAffiliateSignup, normalizeEmail, redeemCoupon, selectOrderDiscount, validateCoupon } from "./affiliate-coupons";
+import ManualInvoiceView from "./ManualInvoice";
+import { createManualInvoice, parseManualInvoice, reportManualPayment, INVOICE_STORAGE_KEY, type ManualInvoice, type PaymentMethod } from "./manual-invoice";
+import { completeAffiliateSignup, normalizeEmail, selectOrderDiscount, validateCoupon } from "./affiliate-coupons";
 import { readCouponInventory, updateCouponInventory, useAffiliateCoupons } from "./useAffiliateCoupons";
 import { demoCheckoutTotals } from "./demo-checkout-totals";
 import { coaRecords, opsCards, products, researchArticles, type Product } from "./pow-data";
@@ -286,14 +288,15 @@ function CheckoutView(){
   const [email,setEmail]=useState("");
   const [verifiedEmail,setVerifiedEmail]=useState("");
   const [appliedCode,setAppliedCode]=useState("");
-  const [previewLabel,setPreviewLabel]=useState("");
-  const [previewIdentity,setPreviewIdentity]=useState("");
+  const [method,setMethod]=useState<PaymentMethod>("zelle");
+  const [invoice,setInvoice]=useState<ManualInvoice|null>(null);
+  const [savedInvoice,setSavedInvoice]=useState<ManualInvoice|null>(null);
+  const [storageNotice,setStorageNotice]=useState("");
   const result=appliedCode ? validateCoupon(inventory.state,appliedCode,email,verifiedEmail) : null;
   const couponError=appliedCode ? inventory.error || result?.error || "" : "";
   const coupon=result?.coupon;
   const chosen=selectOrderDiscount(offer.status === "available",coupon?.percent);
-  const discountLabel=chosen.source === "affiliate" ? `${chosen.percent}% affiliate discount` : "10% first-order offer";
-  const identity=JSON.stringify([appliedCode,normalizeEmail(email),verifiedEmail,chosen.source]);
+  const discountLabel=chosen.source === "affiliate" ? `${chosen.percent}% affiliate discount` : chosen.percent ? "10% first-order offer" : "Discount";
   const changeEmail=(value:string)=>{setEmail(value);setVerifiedEmail("")};
   const applyCoupon=(code:string)=>{
     try { const checked=validateCoupon(readCouponInventory(),code,email,verifiedEmail); if(checked.error)return checked.error; setAppliedCode(code); return ""; }
@@ -302,14 +305,40 @@ function CheckoutView(){
   const cart=useDemoCart();
   const [ack,setAck]=useState(false);
   const [age,setAge]=useState(false);
-  const [placed,setPlaced]=useState(false);
   const [notice,setNotice]=useState("");
-  const [previewTotal,setPreviewTotal]=useState(0);
-  const [previewDiscount,setPreviewDiscount]=useState(0);
   const formRef=useRef<HTMLFormElement>(null);
-  const paymentRef=useRef<HTMLDialogElement>(null);
+  const formDraft=useRef<Record<string,string>>({});
   const merchandise=cart.items.reduce((n,x)=>n+itemTotal(x),0);
   const {shipping,tariff,discount,total}=demoCheckoutTotals(merchandise,offer.status === "available",coupon?.percent);
+  useEffect(()=>{
+    if(invoice)return;
+    for(const [name,value] of Object.entries(formDraft.current)){
+      const input=formRef.current?.elements.namedItem(name);
+      if(input instanceof HTMLInputElement||input instanceof HTMLSelectElement)input.value=value;
+    }
+  },[invoice]);
+  useEffect(()=>{
+    const timer=window.setTimeout(()=>{
+      try {
+        const raw=sessionStorage.getItem(INVOICE_STORAGE_KEY);
+        const saved=parseManualInvoice(raw);
+        if(raw&&!saved)setStorageNotice("The saved sample could not be read. Generate a new sample invoice from your cart.");
+        setSavedInvoice(saved);
+        setInvoice(saved);
+      } catch { setStorageNotice("This browser cannot save the sample invoice. Keep this page open or print a copy before leaving."); }
+    },0);
+    return()=>window.clearTimeout(timer);
+  },[]);
+  const remember=(next:ManualInvoice)=>{
+    setInvoice(next);
+    setSavedInvoice(next);
+    try {
+      const raw=JSON.stringify(next);
+      sessionStorage.setItem(INVOICE_STORAGE_KEY,raw);
+      if(sessionStorage.getItem(INVOICE_STORAGE_KEY)!==raw)throw new Error("Storage discarded the invoice");
+      setStorageNotice("");
+    } catch { setStorageNotice("This browser could not save the sample invoice. Keep this page open or print a copy before leaving."); }
+  };
   const fillSample=()=>{
     const values:Record<string,string>={email:"researcher@example.com",phone:"(202) 555-0142",firstName:"Alex",lastName:"Sample",institution:"Example Research Lab",address:"123 Example Street",city:"Sample City",state:"CA",zip:"90001"};
     for(const [name,value] of Object.entries(values)){
@@ -323,57 +352,32 @@ function CheckoutView(){
     e.preventDefault();
     if(!cart.items.length||!ack||!age)return;
     if(couponError){setNotice(couponError);return;}
-    setNotice("");
-    setPreviewTotal(total);
-    setPreviewDiscount(discount);
-    setPreviewLabel(discountLabel);
-    setPreviewIdentity(identity);
-    paymentRef.current?.showModal();
-  };
-  const dismiss=(failed=false)=>{
-    paymentRef.current?.close();
-    setNotice(failed?"Demo payment not completed. Nothing was charged. Your cart is saved; try the preview again.":"Venmo preview canceled. Nothing was charged and your cart is unchanged.");
-  };
-  const approve=()=>{
-    // Reconfirm a preview if another tab changed the cart or used the offer.
-    if(total !== previewTotal || discount !== previewDiscount || identity !== previewIdentity || couponError){
-      paymentRef.current?.close();
-      setNotice("Your order total changed. Review the updated amount and preview payment again.");
-      return;
-    }
     try {
-      if(appliedCode){
-        const previous=readCouponInventory();
-        // Reread and validate at approval; cancel/failure never consumes a code.
-        updateCouponInventory(current=>redeemCoupon(current,appliedCode,email,verifiedEmail,"POW-DEMO-1001"));
-        try { if(offer.status === "available") offer.consume(); }
-        catch (error) { updateCouponInventory(()=>previous); throw error; }
-      } else if(offer.status === "available") offer.consume();
-    }
-    catch (error) { paymentRef.current?.close(); setNotice(error instanceof Error ? error.message : "Could not save this demo order. Restore browser storage and try again."); return; }
-    // Preview only: no payment SDK, transfer link, request, or merchant credentials.
-    paymentRef.current?.close();
-    setPlaced(true);
-    cart.set([]);
+      // Read the latest coupon state, but never redeem it on a customer payment report.
+      if(appliedCode){const checked=validateCoupon(readCouponInventory(),appliedCode,email,verifiedEmail);if(checked.error){setNotice(checked.error);return;}}
+      const next=createManualInvoice({lines:cart.items,method,discountPercent:chosen.percent,discountLabel},crypto.randomUUID(),new Date().toISOString());
+      if(formRef.current)formDraft.current=Object.fromEntries([...new FormData(formRef.current).entries()].filter((entry):entry is [string,string]=>typeof entry[1]==="string"));
+      remember(next);
+      setNotice("");
+      window.scrollTo({top:0,behavior:"instant"});
+    } catch(error) {setNotice(error instanceof Error ? error.message : "Could not prepare the invoice. Your cart is unchanged.");}
   };
-  if(placed)return <main><Header/><section className="success-page"><span className="impact-label">Venmo demo complete · no charge made</span><h1>Test order<br/><em>landed.</em></h1><p>POW-DEMO-1001 · Venmo preview · ${previewTotal.toFixed(2)} simulated total.</p>{previewDiscount>0&&<p>You saved ${previewDiscount.toFixed(2)} with your {previewLabel}. {previewLabel.includes("affiliate") ? "This coupon is now redeemed in the affiliate inventory." : "This browser’s offer is now used."}</p>}<p>No payment, email, inventory, fulfillment, or customer record was created. This device&apos;s demo cart has been cleared.</p><div className="success-actions"><Link className="button primary" href="/track-order?order=POW-DEMO-1001">Track demo order</Link><Link className="button ghost" href="/shop">Back to shop</Link></div></section><Footer/></main>;
+  if(invoice)return <main className="invoice-page"><Header/><ManualInvoiceView invoice={invoice} storageNotice={storageNotice} onBack={()=>{setInvoice(null);window.scrollTo({top:0,behavior:"instant"})}} onReport={()=>remember(reportManualPayment(invoice))}/><Footer/></main>;
   return <main><Header/>
-    <section className="checkout-head"><span className="impact-label">Venmo checkout · preview</span><h1>Finish the<br/><em>test run.</em></h1><p>Try the Venmo-only checkout experience. This preview cannot collect a payment or create a real order.</p></section>
-    <DemoNotice>Venmo setup pending. No money moves in this preview. Use sample details to walk through the experience.</DemoNotice>
-    <TariffNotice fee={tariff} active={!offer.gated}/>
+    <section className="checkout-head"><span className="impact-label">Venmo + Zelle / invoice checkout</span><h1>Finish the<br/><em>lineup.</em></h1><p>Choose your payment method and review one itemized invoice. POW! confirms a live order after matching the payment received.</p></section>
+    <DemoNotice>This preview cannot collect a payment or create a real order. Use sample details; do not send money for a sample invoice.</DemoNotice>
+    {savedInvoice&&<div className="resume-invoice"><div><strong>Your last sample invoice is saved in this tab.</strong><span>{savedInvoice.status === "payment_reported" ? "Payment reported · awaiting verification (demo)" : "Awaiting payment (demo)"}</span></div><button type="button" onClick={()=>setInvoice(savedInvoice)}>Reopen sample invoice →</button></div>}
+    <TariffNotice fee={tariff} active={!offer.gated&&!savedInvoice}/>
     <form ref={formRef} className="checkout-layout" onSubmit={preview}>
       <div className="checkout-fields">
         <section><span>01 / Contact</span><h2>Who&apos;s researching?</h2><button className="sample-details-button" type="button" onClick={fillSample}>Fill sample details</button><div className="form-grid"><label>Email<input name="email" required type="email" placeholder="researcher@example.com" value={email} onChange={event=>changeEmail(event.target.value)}/></label><label>Phone<input name="phone" required type="tel" placeholder="(202) 555-0142"/></label></div></section>
         <section><span>02 / Shipping</span><h2>Where&apos;s it going?</h2><div className="form-grid"><label>First name<input name="firstName" required/></label><label>Last name<input name="lastName" required/></label><label className="wide">Institution<input name="institution" required/></label><label className="wide">Address<input name="address" required/></label><label>City<input name="city" required/></label><label>State<select name="state" required defaultValue=""><option value="" disabled>Select</option><option>CA</option><option>NV</option><option>AZ</option></select></label><label>ZIP<input name="zip" required inputMode="numeric"/></label></div></section>
         <CheckoutCoupon key={normalizeEmail(email)} email={email} verifiedEmail={verifiedEmail} onVerify={setVerifiedEmail} appliedCode={appliedCode} percent={coupon?.percent} error={couponError} onApply={applyCoupon} onRemove={()=>setAppliedCode("")}/>
-        <section><span>03 / Payment</span><h2>Pay with Venmo.</h2><div className="venmo-method"><div><strong>Venmo</strong><span>Only payment option</span></div><span className="venmo-selected">Selected ✓</span><p>Review your total, preview the Venmo approval step, then return to your order confirmation.</p><small>Demonstration only. No Venmo login or financial details are requested.</small></div></section>
+        <section><span>03 / Payment</span><h2>Your payment. Your choice.</h2><fieldset className="manual-methods"><legend>Choose a payment method</legend>{(["zelle","venmo"] as const).map(value=><label aria-label={value==="venmo"?"Venmo":"Zelle"} className={method===value?"selected":""} key={value}><input type="radio" name="paymentMethod" value={value} checked={method===value} onChange={()=>setMethod(value)}/><span><strong>{value==="venmo"?"Venmo":"Zelle"}</strong><small>{value==="venmo"?"Through POW!’s business profile":"Through your bank’s app"}</small></span></label>)}</fieldset><p className="manual-method-note">Your invoice includes the amount and a unique reference for the payment memo. A payment report stays pending until POW! verifies receipt.</p><p className="manual-method-note">{method==="venmo"?"POW!’s Venmo business profile link is needed before live handoff.":"Zelle instructions use the payment number on POW!’s invoice. The enrolled recipient name still needs confirmation."}</p></section>
         <section className="acknowledgments"><label><input type="checkbox" checked={age} onChange={e=>setAge(e.target.checked)}/><span>I confirm I am 21 or older.</span></label><label><input type="checkbox" checked={ack} onChange={e=>setAck(e.target.checked)}/><span>I understand these materials are presented for research use only and the checkout is a no-charge simulation.</span></label></section>
       </div>
-      <aside className="order-summary checkout-summary"><span>TEST ORDER / 01</span><h2>Review.</h2>{cart.items.length?cart.items.map(x=><div key={x.id}><span>{x.qty}× {x.name}<small>{x.strength}</small></span><b>${itemTotal(x).toFixed(2)}</b></div>):<p>Your test cart is empty. <Link href="/shop">Add a product</Link> to try the Venmo preview.</p>}{chosen.source === "affiliate" ? <div className="affiliate-discount-line"><span>{discountLabel}<small>One offer · no stacking</small></span><b>−${discount.toFixed(2)}</b></div> : <FirstOrderOfferLine discount={discount}/>}<div><span>Tariff fee · 5% (demo)<small>Merchandise after discount</small></span><b>${tariff.toFixed(2)}</b></div><div><span>Demo shipping</span><b>{shipping?`$${shipping.toFixed(2)}`:"FREE"}</b></div><div className="summary-total"><span>Preview total</span><b>${total.toFixed(2)}</b></div><p>Demo shipping uses the merchandise amount before discount. Tax is not calculated.</p><button className="venmo-pay-button" disabled={!cart.items.length||!age||!ack}>Preview Venmo payment →</button><p>Nothing is charged. Your cart clears only after you approve the simulated payment.</p><p role="status" aria-live="polite" className="venmo-notice">{notice}</p><details className="venmo-setup"><summary>What remains before launch?</summary><ul><li>Business identity and payment account details.</li><li>Provider confirmation that the catalog and business are eligible.</li><li>Connect approved website checkout, verify payments and refunds, and connect order handling.</li></ul><p>A Venmo username alone does not activate checkout. Autoship billing is not connected.</p></details></aside>
-    </form>
-    <dialog ref={paymentRef} className="venmo-preview-dialog" aria-labelledby="venmo-preview-title" aria-describedby="venmo-preview-description" onCancel={e=>{e.preventDefault();dismiss()}}>
-      <span className="impact-label">POW! checkout demonstration</span><h2 id="venmo-preview-title">Venmo preview</h2><p id="venmo-preview-description">This is a simulated approval step inside POW!, not the Venmo app. No account is connected.</p><div className="venmo-preview-amount"><span>POW! Peptides<br/><small>Demo total · no charge</small></span><strong>${previewTotal.toFixed(2)}</strong></div>{previewDiscount>0&&<p className="venmo-offer-detail">Includes your {previewLabel} savings of ${previewDiscount.toFixed(2)}.</p>}<p className="venmo-tariff-detail">Includes a 5% merchandise surcharge of ${tariff.toFixed(2)} (demo).</p><p>In an approved live checkout, you would authorize the payment with Venmo before returning to POW!.</p><button className="venmo-pay-button" type="button" onClick={approve}>Approve demo payment</button><button className="venmo-cancel-button" type="button" onClick={()=>dismiss()}>Cancel and return to checkout</button><button className="venmo-failure-button" type="button" onClick={()=>dismiss(true)}>Try payment-not-completed example</button>
-    </dialog><Footer/>
+      <aside className="order-summary checkout-summary"><span>INVOICE PREVIEW / 01</span><h2>Review.</h2>{cart.items.length?cart.items.map(x=><div key={x.id}><span>{x.qty}× {x.name}<small>{x.strength}</small></span><b>${itemTotal(x).toFixed(2)}</b></div>):<p>Your test cart is empty. <Link href="/shop">Add a product</Link> to preview an invoice.</p>}{chosen.source === "affiliate" ? <div className="affiliate-discount-line"><span>{discountLabel}<small>One offer · no stacking</small></span><b>−${discount.toFixed(2)}</b></div> : <FirstOrderOfferLine discount={discount}/>}<div><span>Tariff fee · 5% (demo)<small>Merchandise after discount</small></span><b>${tariff.toFixed(2)}</b></div><div><span>Demo shipping</span><b>${shipping.toFixed(2)}</b></div><div className="summary-total"><span>Sample total</span><b>${total.toFixed(2)}</b></div><p>Demo shipping uses the merchandise amount before discount. Tax is not calculated.</p><button className="manual-primary" disabled={!cart.items.length||!age||!ack}>Review sample invoice →</button><p>No payment or order is sent. Your cart and discounts remain available while payment is pending.</p><p role="status" aria-live="polite" className="venmo-notice">{notice}</p>{storageNotice&&<p role="alert">{storageNotice}</p>}</aside>
+    </form><Footer/>
   </main>;
 }
 
