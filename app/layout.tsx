@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import EmailOfferProvider from "./EmailOffer";
+import { FIRST_ORDER_OFFER_COOKIE, parseOfferStatus } from "./first-order-offer";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body><EmailOfferProvider>{children}</EmailOfferProvider></body></html>;
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const initialStatus = parseOfferStatus((await cookies()).get(FIRST_ORDER_OFFER_COOKIE)?.value);
+  return <html lang="en"><body><EmailOfferProvider initialStatus={initialStatus}>{children}</EmailOfferProvider></body></html>;
 }

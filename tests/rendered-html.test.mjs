@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { FIRST_ORDER_OFFER_KEY, claimFirstOrderOffer, readOfferStatus, redeemFirstOrderOffer, isShoppingRoute } from "../app/first-order-offer.ts";
+import { FIRST_ORDER_OFFER_KEY, FIRST_ORDER_OFFER_COOKIE, claimFirstOrderOffer, readOfferStatus, redeemFirstOrderOffer, isShoppingRoute, resilientOfferStorage } from "../app/first-order-offer.ts";
 import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bundles.ts";
 import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
 
@@ -9,9 +9,9 @@ const workerUrl = new URL("../dist/server/index.js", import.meta.url);
 workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
 const { default: worker } = await import(workerUrl.href);
 
-async function render(pathname = "/") {
+async function render(pathname = "/", options = {}) {
   return worker.fetch(
-    new Request(`http://localhost${pathname}`, { headers: { accept: "text/html" } }),
+    new Request(`http://localhost${pathname}`, { ...options, headers: { accept: "text/html", ...options.headers } }),
     { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
     { waitUntil() {}, passThroughOnException() {} },
   );
@@ -455,6 +455,72 @@ test("remembers access and consumes the first-order offer once without storing e
 test("storage failures do not falsely claim that an email offer was saved", () => {
   const blocked = { getItem: () => null, setItem: () => { throw new Error("Storage blocked"); } };
   assert.throws(() => claimFirstOrderOffer(blocked, "researcher@example.com"), /Storage blocked/);
+});
+
+test("email gate survives storage denial and silently discarded writes using verified fallback storage", () => {
+  const values = new Map();
+  const fallback = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+  const denied = () => { throw new Error("SecurityError"); };
+  const discarded = () => ({ getItem: () => null, setItem: () => {} });
+  const storage = resilientOfferStorage([denied, discarded, () => fallback]);
+  assert.equal(claimFirstOrderOffer(storage, "autofill@example.com"), "available");
+  assert.equal(readOfferStatus(storage), "available");
+  redeemFirstOrderOffer(storage);
+  assert.equal(claimFirstOrderOffer(storage, "another@example.com"), "used");
+  assert.deepEqual([...values], [[FIRST_ORDER_OFFER_KEY, "used"]]);
+  assert.throws(() => claimFirstOrderOffer(resilientOfferStorage([denied, discarded]), "example@example.com"), /unavailable/);
+});
+
+test("a redeemed offer wins over stale available state in another storage mechanism", () => {
+  let cookie = "used";
+  const storage = resilientOfferStorage([
+    () => ({ getItem: () => "available", setItem: () => { throw new Error("Read only"); } }),
+    () => ({ getItem: () => cookie, setItem: (_key, value) => { cookie = value; } }),
+  ]);
+  assert.equal(claimFirstOrderOffer(storage, "test@example.com"), "used");
+  assert.equal(cookie, "used");
+});
+
+test("native email form has a POST fallback without submitting the email address", async () => {
+  const html = await (await render("/shop/ghk-cu")).text();
+  assert.match(html, /<form[^>]*action="\/api\/demo-offer"[^>]*method="post"/);
+  const input = html.match(/<input[^>]*id="pow-welcome-email"[^>]*>/)?.[0];
+  assert.ok(input);
+  assert.doesNotMatch(input, /\bname=|\bvalue=/);
+  assert.match(input, /required=""/);
+});
+
+test("native fallback unlocks server-rendered shopping pages and retains deep-link context without JavaScript", async () => {
+  const post = await render("/api/demo-offer", { method: "POST", headers: { origin: "http://localhost", referer: "http://localhost/shop/ghk-cu?ref=sample&email=old%40example.com" }, body: new URLSearchParams({ returnTo: "/shop/ghk-cu" }) });
+  assert.equal(post.status, 303);
+  const cookie = post.headers.get("set-cookie");
+  assert.match(cookie, /pow_demo_offer=available; Path=\/; SameSite=Lax/);
+  assert.match(post.headers.get("cache-control"), /no-store/);
+  const follow = await render(post.headers.get("location"), { headers: { cookie } });
+  assert.equal(follow.status, 303);
+  assert.equal(follow.headers.get("location"), "/shop/ghk-cu?ref=sample");
+  const page = await render(follow.headers.get("location"), { headers: { cookie } });
+  const html = await page.text();
+  assert.doesNotMatch(html, /aria-labelledby="email-offer-title"|inert=""/);
+  assert.match(html, /FIRST-ORDER OFFER UNLOCKED/);
+  const fresh = await (await render("/shop/ghk-cu")).text();
+  assert.match(fresh, /aria-labelledby="email-offer-title"/); // no request-state leak
+});
+
+test("native fallback keeps used offers used and cannot redirect to another site", async () => {
+  const post = await render("/api/demo-offer", { method: "POST", headers: { cookie: `${FIRST_ORDER_OFFER_COOKIE}=used` }, body: new URLSearchParams({ returnTo: "https://outside.example/" }) });
+  assert.match(post.headers.get("set-cookie"), /pow_demo_offer=used/);
+  const follow = await render(post.headers.get("location"), { headers: { cookie: `${FIRST_ORDER_OFFER_COOKIE}=used` } });
+  assert.equal(follow.headers.get("location"), "/shop");
+  const forged = await render("/api/demo-offer", { method: "POST", headers: { origin: "https://outside.example" }, body: new URLSearchParams() });
+  assert.equal(forged.status, 403);
+});
+
+test("blocked cookies lead to recovery instructions instead of a repeating email gate", async () => {
+  const response = await render("/api/demo-offer?returnTo=%2Fshop");
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("location"), null);
+  assert.match(await response.text(), /Safari or Chrome/);
 });
 
 test("applies ten percent to first-order merchandise with cent rounding and existing shipping threshold", () => {

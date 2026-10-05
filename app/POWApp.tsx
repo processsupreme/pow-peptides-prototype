@@ -47,8 +47,12 @@ function useReferralCapture() {
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     const incoming = query.get("ref") || query.get("partner");
-    if (incoming) localStorage.setItem("pow_referral", incoming);
-    const timer = window.setTimeout(() => setReferral(incoming || localStorage.getItem("pow_referral") || ""), 0);
+    let captured = incoming || "";
+    try {
+      if (incoming) localStorage.setItem("pow_referral", incoming);
+      captured = incoming || localStorage.getItem("pow_referral") || "";
+    } catch { /* Restricted webviews can still browse an incoming referral link. */ }
+    const timer = window.setTimeout(() => setReferral(captured), 0);
     return () => window.clearTimeout(timer);
   }, []);
   return referral;
