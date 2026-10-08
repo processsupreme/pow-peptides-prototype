@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { FIRST_ORDER_OFFER_KEY, FIRST_ORDER_OFFER_COOKIE, claimFirstOrderOffer, readOfferStatus, redeemFirstOrderOffer, isShoppingRoute, resilientOfferStorage } from "../app/first-order-offer.ts";
 import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bundles.ts";
+import { creamCartItem, powCream } from "../app/pow-cream.ts";
 import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
 import { createManualInvoice, reportManualPayment, parseManualInvoice, invoiceText, POW_PAYMENT_PHONE } from "../app/manual-invoice.ts";
 
@@ -809,13 +810,50 @@ test("new product labels appear across storefronts and legacy bookmarks redirect
   assert.equal(invoice.lines[0].strength,"Superman 10 mg / Batman 24 IU");
 });
 
-test("POW cream is featured before the catalog with pending product details and no invented price", async () => {
+test("POW cream is featured before the catalog with its balm image, selected price, and purchase action", async () => {
   const html = (await (await render("/")).text()).replaceAll("<!-- -->", "");
   assert.ok(html.indexOf('id="pow-cream"') < html.indexOf('class="product-section"'));
   const cream = html.split('id="pow-cream"')[1].split("</section>")[0];
   assert.match(cream, /Benadryl \+ KPV/);
   assert.match(cream, /stinging, welts, and itching/);
-  assert.match(cream, /Patent details and evidence for these uses are pending review/);
-  assert.match(cream, /Price to be confirmed/);
-  assert.doesNotMatch(cream, /Add to cart|\$\d/);
+  assert.match(cream, /Patent documentation/);
+  assert.match(cream, /\$39/);
+  assert.match(cream, /Add cream to test cart/);
+  assert.match(cream, /products\/pow-cream-balm-jar.png/);
+  assert.doesNotMatch(cream, /Price to be confirmed|Product photography coming/);
+});
+
+
+test("cream has a dedicated product page and is discoverable in the shop", async () => {
+  for (const path of ["/shop", "/shop/pow-cream"]) {
+    const response=await render(path);
+    assert.equal(response.status,200);
+    const html=(await response.text()).replaceAll("<!-- -->", "");
+    assert.match(html,/Benadryl \+ KPV/);
+    assert.match(html,/\$39/);
+    assert.match(html,/Add cream to test cart/);
+    assert.match(html,/pow-cream-balm-jar.png/);
+  }
+  assert.equal(isShoppingRoute("/shop/pow-cream"),true);
+  const image=await readFile(new URL("../public"+powCream.image,import.meta.url));
+  assert.equal(image.subarray(1,4).toString(),"PNG");
+});
+
+test("cream purchases retain jar quantity, selected pricing, and invoice arithmetic", () => {
+  const item=JSON.parse(JSON.stringify(creamCartItem()));
+  assert.equal(item.unitLabel,"jar");
+  assert.equal(item.unitPrice,39);
+  assert.equal(item.qty,1);
+  assert.equal(item.slug,"pow-cream");
+  assert.doesNotMatch(item.strength,/vial|mg|mL|IU/);
+  const invoice=createManualInvoice({...invoiceInput,lines:[item]},invoiceId,invoiceDate);
+  assert.equal(invoice.total,48.86);
+  assert.equal(invoice.lines[0].name,"POW! Cream");
+  assert.match(invoiceText(invoice),/1 jar/);
+  assert.deepEqual(parseManualInvoice(JSON.stringify(invoice)),invoice);
+  item.qty=2;
+  const twoJars=createManualInvoice({...invoiceInput,lines:[item],shippingMethod:"overnight"},invoiceId,invoiceDate);
+  assert.equal(twoJars.merchandise,78);
+  assert.equal(twoJars.total,143.71);
+  assert.equal(twoJars.lines[0].qty,2);
 });

@@ -27,6 +27,10 @@ The October 8 Superman naming confirmation maps the Just divorced bundle's Super
 
 Bundle cart lines retain the fixed price, full component list, and pending details through local storage and checkout. Their quantity means number of complete bundles. Existing demo shipping and the 5% merchandise surcharge still apply; bundle prices are merchandise amounts, not final checkout totals. Inventory is neither reserved nor decremented.
 
+## POW cream concept (October 8, 2026)
+
+The user separately authorized creating a balm-style product image, writing a description, and choosing a price. `app/pow-cream.ts` holds the selected $39-per-jar prototype price and description; `public/products/pow-cream-balm-jar.png` is generated packaging concept imagery. Cream can enter the local demo cart and invoices, using jar units. It is not added to the supplied vial stock snapshot because no size, concentration, SKU/stock count, or actual availability was supplied. The 38 research product families, 39 variants, and 19,050 supplied vials remain unchanged. See [cream product concept](CREAM_PRODUCT.md).
+
 ## Maintaining the source
 
 The October 2 first-order email offer is an explicitly requested 10% promotion, itemized separately from supplied product and bundle prices. The demo applies it once per browser after email entry; line-item base prices and inventory records are unchanged. See [the offer's scope, pricing examples, and production requirements](EMAIL_OFFER.md). Earlier statements about no discounts refer to automatic volume, box, or bulk price reductions, not this subsequently requested offer.

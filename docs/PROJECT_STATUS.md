@@ -1,5 +1,15 @@
 # Project status and roadmap
 
+## POW cream product concept October 8 2026
+
+The user requested an original cream image in a balm jar (not a vial), delegated the description, and authorized choosing its price. Selected $39 per jar for the prototype. Added one generated product mockup using the supplied POW! logo as a reference, black/white/lime labeling, an open cream jar, and a black screw lid. The original brand assets remain untouched; this is proposed packaging, not a photograph of a manufactured product.
+
+Replaced the homepage placeholder with the image, original description, price, and add-to-test-cart action. A compact shop feature and dedicated `/shop/pow-cream` page connect discovery to the existing cart, discounts, shipping selection, and sample invoices. Cart units say “jar” and display the jar image. The cream product record is separate from the supplied vial inventory; no size, concentration, stock count, lot record, or live availability was invented.
+
+Patent and intended-use statements remain attributed to POW’s product brief, with unresolved details in the product accordion. See [cream product record and image-generation provenance](CREAM_PRODUCT.md) for the exact description, selected price, saved image, generation prompt, and remaining formulation/patent/evidence inputs. The image, description, and pricing questions from the prior update are now resolved for the prototype.
+
+Validation on the Mini: lint passed with the existing 11 image-element warnings; all 80 tests and the Vinext build passed; TypeScript and the Next production build passed. Added coverage checks the dedicated cream route, shop/home discovery, saved image, selected price, jar cart payload, one/two-jar invoice totals, and invoice restoration. The generated image was inspected directly. Browser interaction and responsive visual QA were not performed. Work remains local; no push, merge, remote build, or deployment occurred.
+
 ## Shipping, vial names, and cream spotlight October 8 2026
 
 Implemented the user-requested free priority shipping at $800 and selectable $70 overnight shipping, free at $1,300. Thresholds include the exact boundary and retain the existing pre-discount merchandise basis; the $12 priority charge below $800 is still a demo assumption. Cart and bulk show priority estimates, and checkout, invoice, copy/print, and restored samples use the selected method consistently. Shared totals now serve checkout and invoices. New invoices use schema version 2; old samples prompt regeneration rather than silently changing their totals. Carrier, availability by destination, cutoffs, and actual delivery promises remain future configuration.
