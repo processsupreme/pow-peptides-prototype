@@ -16,7 +16,7 @@ export const researchBundles: ResearchBundle[] = [
     { name: "PT-141", slug: "pt-141" }, { name: "Oxytocin", slug: "oxytocin" }, { name: "Triple Threat" }, { name: "B12", slug: "vitamin-b12" },
   ] },
   { slug: "just-divorced", name: "Just divorced research bundle", price: 200, components: [
-    { name: "Super Man", strength: "10 mg" }, { name: "KLOW", slug: "klow" }, { name: "GHK-Cu", slug: "ghk-cu" },
+    { name: "Superman", slug: "superman" }, { name: "KLOW", slug: "klow" }, { name: "GHK-Cu", slug: "ghk-cu" },
   ] },
   { slug: "benjamin-buttons", name: "Benjamin buttons bundle", price: 220, components: [
     { name: "GHK-Cu", slug: "ghk-cu" }, { name: "Epithalon", slug: "epitalon" }, { name: "SNAP-8", slug: "snap-8" }, { name: "Tesa / Ipa", slug: "tesamorelin-ipamorelin" },

@@ -9,7 +9,7 @@ export type ProductBenefits = {
 };
 
 export const productBenefits: Record<string, ProductBenefits> = {
-  'reta-glp-3': {
+  'superman': {
     headline: 'Weight management. A different angle on appetite.',
     intro: 'Weight management is about more than willpower. Retatrutide is being researched for its potential to influence appetite and how the body uses energy. Human trials have reported substantial weight loss, making this one of the catalog’s most closely studied weight-management compounds.',
     benefits: [
@@ -405,9 +405,9 @@ export const productBenefits: Record<string, ProductBenefits> = {
     evidenceNote: 'The cited sources do not establish muscle gain, fat loss, better sleep, or recovery benefits for this mixture. Component quantities and DAC status remain unconfirmed.',
     sources: ['cjc', 'ipa'],
   },
-  'prime-191-gh': {
-    headline: 'Know the material behind the GH name.',
-    intro: 'Growth, body composition, and recovery are the reasons people explore GH-related products. Prime 191 GH is POW’s 24 IU research listing, but its molecular identity has not been confirmed. That specification is necessary before explaining which growth-hormone findings apply.',
+  'batman': {
+    headline: 'Know the material behind the label.',
+    intro: 'Growth, body composition, and recovery are the reasons people explore GH-related products. Batman is POW’s 24 IU research listing, but its molecular identity has not been confirmed. That specification is necessary before explaining which growth-hormone findings apply.',
     benefits: [
       ['GH-related research interest', 'Growth hormone has defined biological roles, but a name alone cannot establish that this listing contains the same material as a studied somatropin preparation.'],
       ['A product-specific comparison', 'The useful next details are the sequence, activity standard, and formulation. Those facts allow a meaningful comparison without inventing a conversion or borrowing another product’s benefits.'],

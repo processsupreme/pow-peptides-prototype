@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { invoiceText, POW_PAYMENT_PHONE, POW_PAYMENT_PHONE_DISPLAY, type ManualInvoice as Invoice } from "./manual-invoice";
 
+import { SHIPPING_OPTIONS } from "./demo-checkout-totals";
+
 const money = (amount: number) => `$${amount.toFixed(2)}`;
 
 export default function ManualInvoice({ invoice, onReport, onBack, storageNotice }: {
@@ -32,8 +34,8 @@ export default function ManualInvoice({ invoice, onReport, onBack, storageNotice
       </div>
       <dl className="invoice-meta"><div><dt>Invoice reference / payment memo</dt><dd>{invoice.reference}</dd></div><div><dt>Created</dt><dd>{new Date(invoice.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</dd></div><div><dt>Payment method</dt><dd>{method}</dd></div></dl>
       <div className="invoice-line-items"><table><caption>Your itemized invoice</caption><thead><tr><th scope="col">Item / strength</th><th scope="col">Qty</th><th scope="col">Each</th><th scope="col">Total</th></tr></thead><tbody>{invoice.lines.map((line, index) => <tr key={index}><th scope="row">{line.name}<small>{line.strength}</small></th><td>{line.qty}</td><td>{money(line.unitPrice)}</td><td>{money(line.qty * line.unitPrice)}</td></tr>)}</tbody></table></div>
-      <dl className="invoice-totals"><div><dt>Merchandise</dt><dd>{money(invoice.merchandise)}</dd></div>{invoice.discount > 0 && <div><dt>{invoice.discountLabel}</dt><dd>−{money(invoice.discount)}</dd></div>}<div><dt>Tariff fee · 5% (demo)</dt><dd>{money(invoice.tariff)}</dd></div><div><dt>Shipping (demo)</dt><dd>{money(invoice.shipping)}</dd></div><div className="invoice-total"><dt>Sample total</dt><dd>{money(invoice.total)}</dd></div></dl>
-      <p className="invoice-footnote">Tax is not calculated. Shipping and fees retain the existing demo rules. No stock is reserved, no recurring charge is authorized, and no delivery date is promised.</p>
+      <dl className="invoice-totals"><div><dt>Merchandise</dt><dd>{money(invoice.merchandise)}</dd></div>{invoice.discount > 0 && <div><dt>{invoice.discountLabel}</dt><dd>−{money(invoice.discount)}</dd></div>}<div><dt>Tariff fee · 5% (demo)</dt><dd>{money(invoice.tariff)}</dd></div><div><dt>{SHIPPING_OPTIONS[invoice.shippingMethod].label}</dt><dd>{invoice.shipping ? money(invoice.shipping) : "FREE"}</dd></div><div className="invoice-total"><dt>Sample total</dt><dd>{money(invoice.total)}</dd></div></dl>
+      <p className="invoice-footnote">Tax is not calculated. Free priority shipping on $800+ orders; overnight is $70, free on $1,300+ orders. Thresholds use merchandise before discounts. Fulfillment remains simulated. No stock is reserved, no recurring charge is authorized, and no delivery date is promised.</p>
       <div className="invoice-tools"><button type="button" onClick={() => window.print()}>Print / save as PDF</button><button type="button" onClick={() => copy(invoiceText(invoice), "Sample invoice")}>Copy sample invoice</button><button type="button" onClick={onBack}>Back to checkout</button></div>
     </article>
     <aside className="manual-payment-panel" aria-label={`${method} payment instructions`}>

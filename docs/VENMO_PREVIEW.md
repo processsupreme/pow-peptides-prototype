@@ -1,22 +1,24 @@
 # Venmo and Zelle invoice checkout
 
-Updated October 4, 2026. POW supplied an example of its current text-confirmation → invoice → manual Venmo/Zelle payment process and requested a website version. Checkout now demonstrates that manual invoice journey in place of the simulated Venmo approval dialog.
+Updated October 8, 2026. POW supplied an example of its current text-confirmation → invoice → manual Venmo/Zelle payment process and requested a website version. Checkout now demonstrates that manual invoice journey in place of the simulated Venmo approval dialog.
 
 ## Current implementation
 
 - `/checkout` offers Venmo and Zelle, retains the existing contact/shipping form and affiliate code controls, and prepares an itemized sample invoice.
-- The invoice snapshots product names, strengths, quantities, supplied unit prices, applied discount, the existing demo surcharge/shipping, and total. Every new invoice receives a UUID-based `POW-DEMO-…` reference. Returning to the invoice or reporting payment preserves that reference and amount.
+- The invoice snapshots product names, strengths, quantities, supplied unit prices, applied discount, the existing demo surcharge, selected shipping method/charge, and total. Every new invoice receives a UUID-based `POW-DEMO-…` reference. Returning to the invoice or reporting payment preserves that reference and amount.
 - The payment contact is **(619) 439-3459**, transcribed from the user-supplied POW invoice. No customer identity, address, email, or invoice screenshot from that example was added to the repository. The supplied example's VIP rate, historical prices, shipping amount, branding, and invoice sequence do not replace the existing approved catalog and design.
 - Customers can copy the contact number, sample amount, invoice reference, or complete sample invoice, and print/save a PDF using their browser. Copy success is shown only after the clipboard succeeds; failure tells the customer how to copy manually.
 - Zelle instructions describe payment through the customer's bank, recipient verification, and including the invoice reference if a memo field is available. Venmo instructions require the actual business profile. No invented recipient URL, deep link, or payment QR is emitted.
 - **Preview “I sent payment”** changes `awaiting_payment` to `payment_reported`, explicitly unverified. It never marks an order paid, redeems a coupon, uses the first-order offer, clears the cart, reserves inventory, or initiates fulfillment. There is no customer-side paid transition.
-- One invoice snapshot is stored in this tab's session storage as `pow_demo_manual_invoice_v1`. It survives reloads and navigation in the same tab. The parser validates its version, status, line data, and totals; invalid data is not rendered as a valid invoice. Only allowlisted invoice fields are stored, never the checkout form. Storage denial or silent write failure shows a warning and keeps the invoice usable in memory.
+- One invoice snapshot is stored in this tab's session storage as `pow_demo_manual_invoice_v1`. It survives reloads and navigation in the same tab. New snapshots use schema version 2 and include priority/overnight selection. Older samples are rejected with a request to generate a new invoice, rather than silently repriced. The parser validates its version, shipping method, status, line data, and totals; invalid data is not rendered as a valid invoice. Only allowlisted invoice fields are stored, never the checkout form. Storage denial or silent write failure shows a warning and keeps the invoice usable in memory.
 - Returning to checkout retains the entered form details in React memory and offers reopening the previous sample invoice. A changed cart requires generating a new sample. Reloading does not restore personal details.
+
+Priority shipping is free at $800 in pre-discount merchandise (the existing $12 below-threshold charge remains a demo assumption). Overnight is $70, free at $1,300. Both thresholds are inclusive; discounts and fees do not affect eligibility. Invoice display, copy, print, reload, and payment reporting retain the chosen method and price. Carrier, cutoff, and geographical availability remain unresolved.
 
 ## Client walkthrough
 
 1. Unlock the email offer with a synthetic address, add a product/bundle, and open `/checkout`.
-2. Dismiss the existing tariff cameo, select **Fill sample details**, choose Zelle or Venmo, and check the existing acknowledgments.
+2. Dismiss the existing tariff cameo, select **Fill sample details**, choose priority or overnight shipping, choose Zelle or Venmo, and check the existing acknowledgments.
 3. Select **Review sample invoice**. Inspect line items, savings, total, unique reference, payment instructions, and copy/print controls.
 4. Return to checkout and reopen the invoice. Reload while viewing it: its reference, amount, and status remain the same in this tab.
 5. Check the simulated payment-report acknowledgment, then select **Preview “I sent payment”**. The state is **Awaiting POW! verification**, not paid. No message is delivered to POW.

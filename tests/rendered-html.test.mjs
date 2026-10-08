@@ -22,7 +22,7 @@ for (const [pathname, expected] of [
   ["/", "Purity with a"],
   ["/access?ref=test-partner", "Access the"],
   ["/shop", "Shop the"],
-  ["/shop/reta-glp-3", "Reta GLP-3"],
+  ["/shop/superman", "Superman"],
   ["/coa", "The proof behind"],
   ["/research", "Research sharper"],
   ["/research/reading-a-certificate", "How to read a certificate"],
@@ -60,7 +60,7 @@ test("ships finished metadata and removes the starter marker", async () => {
 });
 
 test("keeps unresolved business data explicit", async () => {
-  const response = await render("/shop/reta-glp-3");
+  const response = await render("/shop/superman");
   const html = (await response.text()).replaceAll("<!-- -->", "");
   assert.match(html, /\$80/);
   assert.match(html, /XX%/);
@@ -72,7 +72,7 @@ test("renders the complete supplied catalog with exact strengths and prices", as
   const response = await render("/shop");
   const html = (await response.text()).replaceAll("<!-- -->", "");
   assert.match(html, />38<\/b> products/);
-  for (const value of ["Reta GLP-3", "10 mg", "$80", "FOXO4-DRI", "$140", "Prime 191 GH", "24 IU", "Vilon", "20 mg", "$70"]) {
+  for (const value of ["Superman", "10 mg", "$80", "FOXO4-DRI", "$140", "Batman", "24 IU", "Vilon", "20 mg", "$70"]) {
     assert.match(html, new RegExp(value.replace("$", "\\$")));
   }
 });
@@ -163,7 +163,7 @@ test("publishes complete research guides and honest coming-soon states", async (
 });
 
 test("renders a high-detail, evidence-bounded product record", async () => {
-  const reta = (await (await render("/shop/reta-glp-3")).text()).replaceAll("<!-- -->", "");
+  const reta = (await (await render("/shop/superman")).text()).replaceAll("<!-- -->", "");
   const water = (await (await render("/shop/bacteriostatic-water")).text()).replaceAll("<!-- -->", "");
   assert.match(reta, /Weight management\. A different angle on appetite\./);
   assert.match(reta, /What each receptor contributes/);
@@ -181,7 +181,7 @@ test("renders a high-detail, evidence-bounded product record", async () => {
 });
 
 test("offers only supplied strength variants with exact prices and stock counts", async () => {
-  const response = await render("/shop/reta-glp-3");
+  const response = await render("/shop/superman");
   const html = (await response.text()).replaceAll("<!-- -->", "");
   const source = await readFile(new URL("../app/POWApp.tsx", import.meta.url), "utf8");
   assert.match(html, /Select strength/);
@@ -202,7 +202,7 @@ test("lets product story headings use the full page width", async () => {
 });
 
 test("ships a connected, explicitly simulated commerce loop", async () => {
-  const product = (await (await render("/shop/reta-glp-3")).text()).replaceAll("<!-- -->", "");
+  const product = (await (await render("/shop/superman")).text()).replaceAll("<!-- -->", "");
   const cart = (await (await render("/cart")).text()).replaceAll("<!-- -->", "");
   const box = (await (await render("/build-a-box")).text()).replaceAll("<!-- -->", "");
   const checkout = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
@@ -234,14 +234,14 @@ test("offers both manual payment methods without claiming an order or payment wa
 
 const invoiceId = "a3c79b14-795b-47fd-875a-4f0be017d036";
 const invoiceDate = "2026-10-04T20:00:00.000Z";
-const invoiceInput = { lines: [{ name: "Example vial", strength: "10 mg", qty: 1, unitPrice: 80 }], method: "zelle", discountPercent: 10, discountLabel: "10% first-order offer" };
+const invoiceInput = { lines: [{ name: "Example vial", strength: "10 mg", qty: 1, unitPrice: 80 }], method: "zelle", shippingMethod: "priority", discountPercent: 10, discountLabel: "10% first-order offer" };
 
 test("freezes invoice prices and matches cart arithmetic for each method and discount", () => {
-  for (const method of ["venmo", "zelle"]) for (const discountPercent of [0, 10, 15, 20, 25]) {
-    for (const unitPrice of [19.99, 80, 199, 200, 220]) {
-      const input = { ...invoiceInput, method, discountPercent, lines: [{ ...invoiceInput.lines[0], unitPrice }] };
+  for (const method of ["venmo", "zelle"]) for (const discountPercent of [0, 10, 15, 20, 25]) for (const shippingMethod of ["priority", "overnight"]) {
+    for (const unitPrice of [19.99, 80, 200, 799.99, 800, 800.01, 1299.99, 1300, 1300.01]) {
+      const input = { ...invoiceInput, method, shippingMethod, discountPercent, lines: [{ ...invoiceInput.lines[0], unitPrice }] };
       const invoice = createManualInvoice(input, invoiceId, invoiceDate);
-      const expected = demoCheckoutTotals(unitPrice, false, discountPercent);
+      const expected = demoCheckoutTotals(unitPrice, false, discountPercent, shippingMethod);
       for (const key of ["discount", "tariff", "shipping", "total"]) assert.equal(invoice[key], expected[key]);
       input.lines[0].qty = 5;
       assert.equal(invoice.lines[0].qty, 1);
@@ -296,8 +296,8 @@ test("calculates the demo tariff on merchandise once, excluding shipping", () =>
   assert.deepEqual(demoCheckoutTotals(0), { discount: 0, tariff: 0, shipping: 0, total: 0 });
   assert.deepEqual(demoCheckoutTotals(80), { discount: 0, tariff: 4, shipping: 12, total: 96 });
   assert.deepEqual(demoCheckoutTotals(199), { discount: 0, tariff: 9.95, shipping: 12, total: 220.95 });
-  assert.deepEqual(demoCheckoutTotals(200), { discount: 0, tariff: 10, shipping: 0, total: 210 });
-  assert.deepEqual(demoCheckoutTotals(240), { discount: 0, tariff: 12, shipping: 0, total: 252 });
+  assert.deepEqual(demoCheckoutTotals(200), { discount: 0, tariff: 10, shipping: 12, total: 222 });
+  assert.deepEqual(demoCheckoutTotals(240), { discount: 0, tariff: 12, shipping: 12, total: 264 });
   assert.deepEqual(demoCheckoutTotals(19.99), { discount: 0, tariff: 1, shipping: 12, total: 32.99 });
 });
 
@@ -319,8 +319,8 @@ test("labels all COA examples as demonstration data", async () => {
   const coa = (await (await render("/coa")).text()).replaceAll("<!-- -->", "");
   const data = await readFile(new URL("../app/pow-data.ts", import.meta.url), "utf8");
   assert.match(coa, /DEMONSTRATION DATA — NOT A POW CERTIFICATE OR TEST RESULT/);
-  assert.match(coa, /POW-DEMO-RETA/);
-  assert.match(coa, /DEMO-RETA-001/);
+  assert.match(coa, /POW-DEMO-SUPERMAN/);
+  assert.match(coa, /DEMO-SUPERMAN-001/);
   assert.match(data, /Sample laboratory · not a POW result/);
   assert.doesNotMatch(coa, /99\.\d+%/);
 });
@@ -368,7 +368,7 @@ test("turns the partner network into a complete recruitment and onboarding journ
 
 // Independently transcribed from the supplied document: strength, dollars per vial, vial count.
 const suppliedInventory = {
-  "reta-glp-3": [["10 mg",80,1200],["20 mg",105,300]],
+  "superman": [["10 mg",80,1200],["20 mg",105,300]],
   "ghk-cu": [["100 mg",50,1200]], "bpc-tb-500": [["20 mg",90,400]],
   "bacteriostatic-water": [["10 mL",20,1200]], "tesamorelin": [["10 mg",90,500]],
   "snap-8": [["10 mg",60,400]], "nad-mots-c-5-amino-1mq": [["120 mg",70,400]],
@@ -386,7 +386,7 @@ const suppliedInventory = {
   "ipamorelin": [["10 mg",33,250]], "cortexin": [["20 mg",70,250]],
   "chonluten": [["20 mg",60,250]], "dsip": [["10 mg",45,250]],
   "mots-c": [["10 mg",35,500]], "aod-9604": [["5 mg",55,500]],
-  "cjc-1295-ipamorelin": [["10 mg",55,500]], "prime-191-gh": [["24 IU",80,1200]],
+  "cjc-1295-ipamorelin": [["10 mg",55,500]], "batman": [["24 IU",80,1200]],
   "vilon": [["20 mg",70,250]],
 };
 
@@ -420,7 +420,7 @@ test("renders all five supplied research bundles with exact prices and contents"
     ["pilates", 200, ["BPC-157 / TB-500", "GHK-Cu", "Tesa / Ipa"]],
     ["goddess", 220, ["GHK-Cu", "SNAP-8", "Epithalon", "KLOW"]],
     ["raver", 200, ["PT-141", "Oxytocin", "Triple Threat", "B12"]],
-    ["just-divorced", 200, ["Super Man", "KLOW", "GHK-Cu"]],
+    ["just-divorced", 200, ["Superman", "KLOW", "GHK-Cu"]],
     ["benjamin-buttons", 220, ["GHK-Cu", "Epithalon", "SNAP-8", "Tesa / Ipa"]],
   ]) {
     const card = html.split(`id="${slug}"`)[1].split("</article>")[0];
@@ -451,11 +451,11 @@ test("keeps fixed bundle prices and component details through cart serialization
   const subtotal = restored.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
   assert.equal(subtotal, 1040);
   assert.equal(demoCheckoutTotals(subtotal).total, 1092);
-  assert.equal(demoCheckoutTotals(items[0].unitPrice * 2).total, 420);
+  assert.equal(demoCheckoutTotals(items[0].unitPrice * 2).total, 432);
   assert.equal(bundleContents(researchBundles[0])[2].strength, "16 mg total");
   assert.equal(bundleContents(researchBundles[2])[2].slug, undefined);
   assert.equal(bundleContents(researchBundles[3])[0].strength, "10 mg");
-  assert.equal(bundleContents(researchBundles[3])[0].slug, undefined);
+  assert.equal(bundleContents(researchBundles[3])[0].slug, "superman");
 });
 
 test("makes bundles discoverable from home and shop without replacing the box builder", async () => {
@@ -585,12 +585,12 @@ test("applies ten percent to first-order merchandise with cent rounding and exis
   assert.deepEqual(demoCheckoutTotals(0, true), { discount: 0, tariff: 0, shipping: 0, total: 0 });
   assert.deepEqual(demoCheckoutTotals(80, true), { discount: 8, tariff: 3.6, shipping: 12, total: 87.6 });
   assert.deepEqual(demoCheckoutTotals(199, true), { discount: 19.9, tariff: 8.96, shipping: 12, total: 200.06 });
-  assert.deepEqual(demoCheckoutTotals(200, true), { discount: 20, tariff: 9, shipping: 0, total: 189 });
-  assert.deepEqual(demoCheckoutTotals(220, true), { discount: 22, tariff: 9.9, shipping: 0, total: 207.9 });
+  assert.deepEqual(demoCheckoutTotals(200, true), { discount: 20, tariff: 9, shipping: 12, total: 201 });
+  assert.deepEqual(demoCheckoutTotals(220, true), { discount: 22, tariff: 9.9, shipping: 12, total: 219.9 });
   assert.deepEqual(demoCheckoutTotals(19.99, true), { discount: 2, tariff: .9, shipping: 12, total: 30.89 });
   assert.equal(demoCheckoutTotals(1040, true).discount, 104);
   assert.equal(demoCheckoutTotals(1040, true).total, 982.8);
-  assert.equal(demoCheckoutTotals(200, false).total, 210);
+  assert.equal(demoCheckoutTotals(200, false).total, 222);
 });
 
 // Coupon lifecycle uses synthetic addresses and local storage only.
@@ -669,7 +669,7 @@ test("all approved affiliate discounts work without stacking with the welcome of
     assert.deepEqual(demoCheckoutTotals(200, true, tier), demoCheckoutTotals(200, false, tier));
     assert.equal(demoCheckoutTotals(200, true, tier).discount, 2*tier);
   }
-  assert.deepEqual(demoCheckoutTotals(200, true, 25), {discount:50,tariff:7.5,shipping:0,total:157.5});
+  assert.deepEqual(demoCheckoutTotals(200, true, 25), {discount:50,tariff:7.5,shipping:12,total:169.5});
   assert.deepEqual(demoCheckoutTotals(19.99, false, 15), {discount:3,tariff:.85,shipping:12,total:29.84});
   assert.equal(demoCheckoutTotals(200, true, 99).discount, 20);
   assert.deepEqual(coupons.selectOrderDiscount(false), {source:"none",percent:0});
@@ -732,7 +732,7 @@ test("product research preserves unresolved identities and separates ingredient 
   assert.match(await page("cjc-1295-ipamorelin"), /Does this contain DAC/);
   assert.match(await page("bpc-tb-500"), /does not establish a 10 mg \/ 10 mg split/);
   assert.match(await page("cortexin"), /composition and source of POW material/i);
-  assert.match(await page("prime-191-gh"), /without inventing a conversion/);
+  assert.match(await page("batman"), /without inventing a conversion/);
   assert.match(await page("snap-8"), /Manufacturer data/);
   assert.match(await page("oxytocin"), /no significant benefit/);
   assert.match(await page("dsip"), /without improved subjective sleep quality/);
@@ -742,7 +742,7 @@ test("product research preserves unresolved identities and separates ingredient 
 
 test("product descriptions explain concrete science and study findings instead of repeating generic cautions", async () => {
   const page = async slug => (await (await render(`/shop/${slug}`)).text()).replaceAll("<!-- -->", "");
-  const reta = await page("reta-glp-3");
+  const reta = await page("superman");
   const ghk = await page("ghk-cu");
   const ss = await page("ss-31");
   const tesa = await page("tesamorelin-ipamorelin");
@@ -759,4 +759,63 @@ test("product descriptions explain concrete science and study findings instead o
   assert.match(reta, /aria-label="Research pathway"/);
   assert.equal(reta.split('class="evidence-boundary"').length - 1, 1);
   assert.doesNotMatch(reta, /What the record does not prove/);
+});
+
+
+test("shipping uses inclusive merchandise thresholds independently of discounts and fees", () => {
+  for (const percent of [0, 10, 15, 20, 25]) {
+    for (const [amount, priority, overnight] of [[0,0,0],[200,12,70],[799.99,12,70],[800,0,70],[800.01,0,70],[1299.99,0,70],[1300,0,0],[1300.01,0,0]]) {
+      assert.equal(demoCheckoutTotals(amount, false, percent, "priority").shipping, priority);
+      assert.equal(demoCheckoutTotals(amount, false, percent, "overnight").shipping, overnight);
+    }
+  }
+  assert.deepEqual(demoCheckoutTotals(800, true, 0, "overnight"), {discount:80,tariff:36,shipping:70,total:826});
+  assert.deepEqual(demoCheckoutTotals(1300, true, 0, "overnight"), {discount:130,tariff:58.5,shipping:0,total:1228.5});
+});
+
+test("checkout offers both shipping methods and describes the approved thresholds", async () => {
+  const html = (await (await render("/checkout")).text()).replaceAll("<!-- -->", "");
+  assert.match(html, /name="shippingMethod"[^>]*value="priority"/);
+  assert.match(html, /name="shippingMethod"[^>]*value="overnight"/);
+  assert.match(html, /Overnight shipping · \$70.00/);
+  assert.match(html, /Free on orders of \$1,300 or more/);
+  assert.match(html, /Free on orders of \$800 or more/);
+});
+
+test("invoice export and restoration preserve the shipping method and reject obsolete quotes", () => {
+  for (const [amount, fee] of [[800,70],[1300,0]]) {
+    const invoice = createManualInvoice({...invoiceInput, shippingMethod:"overnight", lines:[{...invoiceInput.lines[0],unitPrice:amount}]}, invoiceId, invoiceDate);
+    assert.equal(invoice.shipping, fee);
+    assert.equal(parseManualInvoice(JSON.stringify(invoice)).shippingMethod, "overnight");
+    assert.match(invoiceText(invoice), fee ? /Overnight shipping: \$70.00/ : /Overnight shipping: FREE/);
+    assert.equal(parseManualInvoice(JSON.stringify({...invoice, shippingMethod:"express"})), null);
+    assert.equal(parseManualInvoice(JSON.stringify({...invoice, version:1})), null);
+  }
+});
+
+test("new product labels appear across storefronts and legacy bookmarks redirect", async () => {
+  for (const path of ["/", "/shop", "/shop/superman", "/shop/batman", "/bundles", "/account", "/coa", "/bulk", "/compare", "/subscribe", "/build-a-box"]) {
+    const html = (await (await render(path)).text()).replaceAll("<!-- -->", "");
+    const visible = html.replace(/<script[\s\S]*?<\/script>/g, "").replace(/<[^>]*>/g, " ");
+    assert.doesNotMatch(visible, /\breta\b|prime 191|super man/i, path);
+  }
+  for (const [oldSlug, newSlug] of [["reta-glp-3","superman"],["prime-191-gh","batman"]]) {
+    const response = await render("/shop/"+oldSlug);
+    assert.equal(response.status, 308);
+    assert.equal(response.headers.get("location"), "/shop/"+newSlug);
+  }
+  const invoice = createManualInvoice({...invoiceInput,lines:[{...invoiceInput.lines[0],name:"Reta GLP-3",strength:"Reta GLP-3 10 mg / Prime 191 GH 24 IU"}]},invoiceId,invoiceDate);
+  assert.equal(invoice.lines[0].name,"Superman");
+  assert.equal(invoice.lines[0].strength,"Superman 10 mg / Batman 24 IU");
+});
+
+test("POW cream is featured before the catalog with pending product details and no invented price", async () => {
+  const html = (await (await render("/")).text()).replaceAll("<!-- -->", "");
+  assert.ok(html.indexOf('id="pow-cream"') < html.indexOf('class="product-section"'));
+  const cream = html.split('id="pow-cream"')[1].split("</section>")[0];
+  assert.match(cream, /Benadryl \+ KPV/);
+  assert.match(cream, /stinging, welts, and itching/);
+  assert.match(cream, /Patent details and evidence for these uses are pending review/);
+  assert.match(cream, /Price to be confirmed/);
+  assert.doesNotMatch(cream, /Add to cart|\$\d/);
 });

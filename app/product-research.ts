@@ -55,7 +55,7 @@ export type ProductResearchProfile = {
   questions: [string, string][];
 };
 export const productResearch: Record<string, ProductResearchProfile> = {
-  'reta-glp-3': {
+  'superman': {
     boundary: 'The published trial is a dated research milestone, not a claim to summarize the latest development stage. Results do not establish the identity, quality, or suitability of this catalog material.',
     questions: [['Are the two strengths different compounds?', 'POW lists 10 mg and 20 mg variants of the same product family. Strength is labeled quantity, not a different receptor profile or an instruction for use.'], ['Does triple agonist mean three ingredients?', 'No. The research term describes one molecule acting at three receptor types. It does not describe a three-component blend.']],
   },
@@ -199,7 +199,7 @@ export const productResearch: Record<string, ProductResearchProfile> = {
     boundary: 'No half-life, release pattern, synergy, or human outcome is claimed for the mixture. POW must confirm the CJC form and both component quantities.',
     questions: [['Does this contain DAC?', 'That detail is not in the supplied inventory and remains unconfirmed.'], ['Is the split 5 mg / 5 mg?', 'No split has been supplied. The listing confirms 10 mg total only.']],
   },
-  'prime-191-gh': {
+  'batman': {
     boundary: 'This listing is not represented as an approved somatropin medicine. Product-specific identity, activity standard, analytical record, and handling documentation are pending.',
     questions: [['Does the name prove it is somatropin?', 'No. POW needs to supply the actual identity and manufacturing specification.'], ['How many milligrams are in 24 IU?', 'No product-specific conversion has been supplied. Applying an assumed conversion would create an unverified specification.']],
   },

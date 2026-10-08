@@ -2,7 +2,7 @@
   "source": "POW supplied inventory, confirmed as source of truth September 8, 2026",
   "snapshotDate": "2026-09-08",
   "products": {
-    "reta-glp-3": [
+    "superman": [
       {
         "id": "reta-glp-3-10-mg",
         "strength": "10 mg",
@@ -297,7 +297,7 @@
         "stockCount": 500
       }
     ],
-    "prime-191-gh": [
+    "batman": [
       {
         "id": "prime-191-gh-24-iu",
         "strength": "24 IU",

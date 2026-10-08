@@ -17,7 +17,7 @@ export function ResearchNavigation() {
 
 export function ProductBenefitsOverview({ slug }: { slug: string }) {
   const profile = productBenefits[slug];
-  const pending = ["klow", "klow-pro", "prime-191-gh"].includes(slug);
+  const pending = ["klow", "klow-pro", "batman"].includes(slug);
   const supply = slug === "bacteriostatic-water";
   return <section id="overview" className="product-story benefit-story research-anchor" aria-labelledby="benefit-heading">
     <header className="story-lead"><span>01 / {pending ? "GET TO KNOW IT" : supply ? "THE PRACTICAL ROLE" : "WHY PEOPLE EXPLORE IT"}</span><h2 id="benefit-heading">{profile.headline}</h2><p>{pending ? "The confirmed details, and what is still needed to explain the benefits." : supply ? "What this supporting material contributes to a compatible research setup." : "The potential benefits that drive interest, and what the evidence means for you."}</p></header>

@@ -33,6 +33,9 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 
 ## Prototype interactions
 
+- Free priority shipping at $800; overnight selectable at checkout for $70, free at $1,300. Thresholds use merchandise before discounts; selected shipping follows the sample invoice. The $12 priority charge below $800 remains a demo assumption.
+- Superman and Batman use the confirmed vial names, with unchanged inventory figures and redirects from the previous product routes.
+- POW! cream has a prominent homepage preview featuring the supplied Benadryl + KPV brief. Photos, final description, size, price, patent details, and support for the proposed uses remain pending; ordering is not enabled.
 - Required email popout on shopping pages, with the requested 10% first-order offer applied to demo cart and checkout; returning access and one-time use are remembered in browser storage with a cookie fallback, and emails are not stored or sent. Native form submission also unlocks access when client scripts are unavailable. See [email offer walkthrough](docs/EMAIL_OFFER.md).
 - Venmo/Zelle invoice checkout with the supplied POW payment contact, itemized sample invoices, unique memo references, copy/print tools, and a payment-reported state awaiting manual verification. Live order intake and recipient details are still needed; see [manual payment flow](docs/VENMO_PREVIEW.md).
 - Mobile navigation and responsive layouts down to 320 px

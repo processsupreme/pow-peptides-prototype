@@ -20,7 +20,7 @@ export type Product = {
 };
 
 const productDefinitions: Omit<Product, "strength" | "price" | "stockCount" | "variants" | "inStock">[] = [
-  { slug:"reta-glp-3", name:"Reta GLP-3", aliases:["reta","glp3"], category:"Metabolic research", format:"Single compound", subscription:true, coa:true, badge:"Best seller", tone:"lime" },
+  { slug:"superman", name:"Superman", aliases:["superman","glp3"], category:"Metabolic research", format:"Single compound", subscription:true, coa:true, badge:"Best seller", tone:"lime" },
   { slug:"ghk-cu", name:"GHK-Cu", aliases:["ghk cu","copper peptide"], category:"Cosmetic research", format:"Single compound", subscription:true, coa:true, badge:"COA available", tone:"yellow" },
   { slug:"bpc-tb-500", name:"BPC / TB-500 blend", aliases:["bpc tb500","tb-500 blend"], category:"Recovery research", format:"Blend", subscription:true, coa:true, badge:"Blend", tone:"red" },
   { slug:"bacteriostatic-water", name:"Bacteriostatic Water", aliases:["bac water","water"], category:"Research supplies", format:"Research supply", subscription:false, coa:false, tone:"blue" },
@@ -56,7 +56,7 @@ const productDefinitions: Omit<Product, "strength" | "price" | "stockCount" | "v
   { slug:"mots-c", name:"MOTS-c", aliases:["motsc"], category:"Longevity research", format:"Single compound", subscription:true, coa:false, tone:"yellow" },
   { slug:"aod-9604", name:"AOD-9604", aliases:["aod9604"], category:"Research compounds", format:"Single compound", subscription:false, coa:false, tone:"red" },
   { slug:"cjc-1295-ipamorelin", name:"CJC-1295 / Ipamorelin blend", aliases:["cjc ipa blend"], category:"Research compounds", format:"Blend", subscription:false, coa:false, badge:"Blend", tone:"blue" },
-  { slug:"prime-191-gh", name:"Prime 191 GH", aliases:["prime 191 gf"], category:"Research compounds", format:"Single compound", subscription:false, coa:false, tone:"lime" },
+  { slug:"batman", name:"Batman", aliases:["Batman"], category:"Research compounds", format:"Single compound", subscription:false, coa:false, tone:"lime" },
   { slug:"vilon", name:"Vilon", aliases:[], category:"Research compounds", format:"Single compound", subscription:false, coa:false, tone:"yellow" },
 ];
 
@@ -68,7 +68,7 @@ export const products: Product[] = productDefinitions.map(product => {
 });
 
 export const coaRecords = [
-  { product:"Reta GLP-3", lot:"DEMO-RETA-001", type:"Purity", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Current", file:"DEMO RECORD", verification:"POW-DEMO-RETA", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Purity","Mass"] },
+  { product:"Superman", lot:"DEMO-SUPERMAN-001", type:"Purity", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Current", file:"DEMO RECORD", verification:"POW-DEMO-SUPERMAN", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Purity","Mass"] },
   { product:"GHK-Cu", lot:"DEMO-GHK-002", type:"Heavy metals", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Current", file:"DEMO RECORD", verification:"POW-DEMO-GHK", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Heavy metals","Mass"] },
   { product:"BPC / TB-500", lot:"DEMO-BPC-003", type:"Sterility", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Current", file:"DEMO RECORD", verification:"POW-DEMO-BPC", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Sterility","Endotoxin"] },
   { product:"SS-31", lot:"DEMO-SS31-004", type:"Endotoxin", date:"DEMO DATE", lab:"Sample laboratory · not a POW result", status:"Archived", file:"DEMO RECORD", verification:"POW-DEMO-SS31", result:"DEMO VALUE", mass:"DEMO MASS", panels:["Identity","Endotoxin","Mass"] },

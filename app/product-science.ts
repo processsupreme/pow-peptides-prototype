@@ -10,7 +10,7 @@ export type ProductScience = {
 };
 const chapter = (title: string, body: string, ...sources: string[]): ScienceChapter => ({ title, body, sources });
 export const productScience: Record<string, ProductScience> = {
-  'reta-glp-3': {
+  'superman': {
     facts: [['Research name', 'Retatrutide / LY3437943'], ['Molecular class', 'Triple receptor agonist'], ['Targets', 'GLP-1R · GIPR · GCGR']],
     pathwayLabel: 'Receptor pharmacology · studied molecule',
     pathway: ['Retatrutide', 'GLP-1 + GIP + glucagon receptors', 'Food-intake and metabolic responses'],
@@ -338,14 +338,14 @@ export const productScience: Record<string, ProductScience> = {
       chapter('The second ingredient follows another route', 'Ipamorelin’s preclinical pharmacology established GH release through a GHRP-like receptor pathway. This differs from a GHRH-related input and explains the scientific interest in comparing the two. To evaluate the mixture, both ingredient amounts and the CJC identity need to be known. The supplied 10 mg total does not establish a 5 mg / 5 mg split or a tested relationship between the two components.', 'ipa'),
     ], studies: [['cjc', 'The long-acting CJC-1295 study reported sustained GH and IGF-I responses in healthy adults. Those pharmacokinetic findings remain attached to that studied form.'], ['ipa', 'The ipamorelin paper provides a separate preclinical ingredient record; neither study tested this unspecified blend.']],
   },
-  'prime-191-gh': {
-    facts: [['Supplied name', 'Prime 191 GH'], ['Supplied unit', '24 IU'], ['Identity status', 'Protein and activity standard pending']],
+  'batman': {
+    facts: [['Supplied name', 'Batman'], ['Supplied unit', '24 IU'], ['Identity status', 'Protein and activity standard pending']],
     pathwayLabel: 'Somatropin comparator context only', pathway: ['Confirmed protein identity', 'Defined biological activity', 'Appropriate endocrine research comparison'],
     chapters: [
-      chapter('What 191 refers to in growth-hormone literature', 'Pharmaceutical somatropin labeling describes a recombinant protein with 191 amino acids. That gives the number in this catalog name a recognizable biological context. It does not by itself verify POW’s sequence, protein source, folding, purity, or formulation. A protein specification needs more detail than the number of residues suggested by its name.', 'gh'),
+      chapter('What the comparator protein tells us', 'Pharmaceutical somatropin labeling describes a recombinant protein with 191 amino acids. That reference provides a framework for comparing a confirmed protein specification. It does not by itself verify Batman’s sequence, protein source, folding, purity, or formulation. POW still needs to supply those product-specific details.', 'gh'),
       chapter('International units describe standardized activity', 'An international unit is tied to a defined biological activity standard. Milligrams describe mass. A justified conversion requires an identified substance and the appropriate reference relationship; it is not a universal rule shared by all materials sold in IU. POW supplied 24 IU for this listing, which is retained without inventing a conversion to milligrams.', 'gh'),
-      chapter('How the growth-hormone context differs from secretagogues', 'Somatropin is growth hormone itself. Releasing-hormone analogues and secretagogues are studied as signals that cause pituitary GH release. This is a useful distinction between supplying a downstream hormone and stimulating an upstream pathway. It supplies context for the catalog name, while POW still needs to confirm exactly what protein and activity specification belong to Prime 191 GH.', 'gh', 'sermorelin', 'ipa'),
-    ], studies: [['gh', 'Official somatropin labeling is used here to explain a comparator protein and its identity framework. It is not a certificate or evidence of equivalence for Prime 191 GH.']],
+      chapter('How the growth-hormone context differs from secretagogues', 'Somatropin is growth hormone itself. Releasing-hormone analogues and secretagogues are studied as signals that cause pituitary GH release. This is a useful distinction between supplying a downstream hormone and stimulating an upstream pathway. It supplies comparator context, while POW still needs to confirm exactly what protein and activity specification belong to Batman.', 'gh', 'sermorelin', 'ipa'),
+    ], studies: [['gh', 'Official somatropin labeling is used here to explain a comparator protein and its identity framework. It is not a certificate or evidence of equivalence for Batman.']],
   },
   vilon: {
     facts: [['Literature association', 'KE: Lys–Glu'], ['Structure class', 'Dipeptide'], ['Research focus', 'Chromatin organization and gene expression']],

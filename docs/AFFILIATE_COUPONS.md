@@ -18,8 +18,8 @@ POW requested affiliate-owned inventories of 10%, 15%, 20%, and 25% discount cod
 - Two codes per tier at signup. POW must set actual allotments, who can access each rate, approval, replenishment, and expiry rules.
 - One issued code per order, recipient-bound and single-use. No recipient reassignment; revoke a mistaken assignment and issue another available code.
 - **Larger offer only; no stacking.** An affiliate code wins a tie with the 10% welcome offer. This is the stated prototype default pending POW approval. Manual payment reports leave both offers available; consumption requires a future confirmed-order integration.
-- Discounts apply to merchandise including the supplied-price bundles, boxes, and cases. Base prices and inventory records are untouched. The existing demo 5% fee uses discounted merchandise; the $200 shipping threshold uses original merchandise. Final exclusions and subscription applicability remain undecided.
-- Example: a $200 order with a 25% affiliate code has $50 savings, $7.50 demo fee, free demo shipping, and a $157.50 total. The welcome offer adds no further discount.
+- Discounts apply to merchandise including the supplied-price bundles, boxes, and cases. Base prices and inventory records are untouched. The existing demo 5% fee uses discounted merchandise; the $800 free-priority and $1,300 free-overnight thresholds use original merchandise. Final exclusions and subscription applicability remain undecided.
+- Example: a $200 order with a 25% affiliate code has $50 savings, $7.50 demo fee, $12 demo priority shipping, and a $169.50 total. The welcome offer adds no further discount.
 - Coupon ownership is recorded; no commission calculation or connection to the portal's separate illustrative ledger is invented. The existing sample order number/tracking fixture remains unchanged.
 
 ## Data and limits
