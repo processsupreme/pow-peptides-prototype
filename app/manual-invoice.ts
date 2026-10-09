@@ -65,11 +65,11 @@ export function parseManualInvoice(raw: string | null): ManualInvoice | null {
   } catch { return null; }
 }
 
-export function invoiceText(invoice: ManualInvoice): string {
+export function invoiceText(invoice: ManualInvoice, paymentConfirmed = false): string {
   return [
     "POW! PEPTIDES — SAMPLE INVOICE — DO NOT PAY",
     `Reference: ${invoice.reference}`, `Created: ${invoice.createdAt}`, `Method: ${invoice.method === "venmo" ? "Venmo" : "Zelle"}`,
-    `Status: ${invoice.status === "payment_reported" ? "Payment reported (simulation); awaiting POW verification" : "Awaiting payment (simulation)"}`,
+    `Status: ${paymentConfirmed ? "Payment confirmed by staff (simulation); no real funds verified" : invoice.status === "payment_reported" ? "Payment reported (simulation); awaiting POW verification" : "Awaiting payment (simulation)"}`,
     "", ...invoice.lines.map(line => `${line.qty} × ${line.name} · ${line.strength} · $${line.unitPrice.toFixed(2)} each = $${(line.qty * line.unitPrice).toFixed(2)}`),
     "", `Merchandise: $${invoice.merchandise.toFixed(2)}`,
     `${invoice.discountLabel || "Discount"}: -$${invoice.discount.toFixed(2)}`,

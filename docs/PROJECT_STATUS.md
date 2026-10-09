@@ -1,5 +1,17 @@
 # Project status and roadmap
 
+## Connected order management and USPS workflow October 9 2026
+
+The user clarified that POW has no order management system and currently ships through USPS. Added a connected local prototype and a staff operating guide in [ORDER_OPERATIONS.md](ORDER_OPERATIONS.md). Reviewing a checkout invoice now creates a non-personal sample order; payment reports enter review without confirming funds. Staff at `/ops` can simulate verification, packing, label entry, carrier acceptance, delivery, and reversible holds. Search, status filters, queue counts, and unsent customer email previews explain the workflow. The previous responsibilities map remains under Operations.
+
+Customer overview/history, the direct `/account/orders` route, invoice links, and `/track-order?order=...` use the same validated local records. Unknown references show no match; the legacy `POW-DEMO-1001` alias opens the starter sample. Delivered orders remain in history. Reopening or reporting an older invoice does not regress staff progress, and the invoice screen/export reflects simulated staff payment confirmation. Labels and carrier acceptance are separate events, based on USPS tracking terminology. No fabricated carrier lookup or delivery estimate is offered.
+
+Records contain invoice items/totals, synthetic tracking tokens, stage events, and hold state. Customer form fields are not persisted. Denied/unreadable storage produces recovery messaging rather than replacing existing data or claiming an update succeeded. All controls are explicitly simulated and publicly accessible; local storage is not security or a production order backend. Durable order intake, authentication/authorization, real payment reconciliation, stock and discount redemption, secure emailed access, notification delivery, label purchase, and live carrier events remain launch implementation. No provider was selected, and actual shipping services/cutoffs and business exception policies remain open.
+
+Validation: all 86 tests and the Vinext build passed; lint passed with the existing 11 image warnings. The Next production build and TypeScript passed after the documented local CSS-worker sandbox retry. Desktop Chrome verified checkout-created cream orders, payment reporting/review, staff confirmation reflected back on the invoice, packing, label creation, hold/release, carrier acceptance, delivery, unsent email preview links, and delivered customer history. Responsive visual QA, live services, and cross-device access were not tested. This release remains local, with no push, merge, or deployment.
+
+The preceding cream/shipping release (`b9bfa10`) was pushed and promoted to the existing Vercel domain at the user's request on October 8. That deployment authorization applied to that release; the older local-only notes below describe its pre-deployment state.
+
 ## POW cream product concept October 8 2026
 
 The user requested an original cream image in a balm jar (not a vial), delegated the description, and authorized choosing its price. Selected $39 per jar for the prototype. Added one generated product mockup using the supplied POW! logo as a reference, black/white/lime labeling, an open cream jar, and a black screw lid. The original brand assets remain untouched; this is proposed packaging, not a photograph of a manufactured product.

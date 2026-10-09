@@ -29,9 +29,12 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 - `/account` and account subroutes — interactive customer account and autoship controls
 - `/partner` and partner subroutes — Command Center, links, masked customers, commission ledger, payouts, creative, and rules
 - `/r/[partnerSlug]` — referral entry that is captured before the gate
-- `/ops` — staff jobs-to-be-done map, clearly labeled as non-final admin software
+- `/ops` — connected sample order queue with payment verification, packing, USPS label/acceptance/delivery simulations, holds, and customer email previews
+- `/account/orders` and `/track-order` — shared sample order history and tracking, connected to sample checkout invoices
 
 ## Prototype interactions
+
+- Connected order management: reviewing a checkout invoice creates a sample order in this browser. Staff actions at `/ops` update customer history and tracking; a customer payment report cannot confirm funds or unlock packing. USPS label creation is separate from carrier acceptance. Email previews send nothing, and demo tracking references never query USPS. See [daily operating instructions and launch scope](docs/ORDER_OPERATIONS.md).
 
 - Free priority shipping at $800; overnight selectable at checkout for $70, free at $1,300. Thresholds use merchandise before discounts; selected shipping follows the sample invoice. The $12 priority charge below $800 remains a demo assumption.
 - Superman and Batman use the confirmed vial names, with unchanged inventory figures and redirects from the previous product routes.

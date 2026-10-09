@@ -6,6 +6,67 @@ import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bund
 import { creamCartItem, powCream } from "../app/pow-cream.ts";
 import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
 import { createManualInvoice, reportManualPayment, parseManualInvoice, invoiceText, POW_PAYMENT_PHONE } from "../app/manual-invoice.ts";
+import { advanceOrder, findOrder, orderFromInvoice, parseOrders, sampleOrders, upsertInvoice } from "../app/demo-orders.ts";
+
+test("sample order cannot enter fulfillment on a customer payment report", () => {
+  const original = sampleOrders()[0];
+  const reported = advanceOrder(original, "report", "2026-10-09T10:00:00Z");
+  assert.equal(reported.stage, "payment_reported");
+  assert.throws(() => advanceOrder(reported, "pack", "2026-10-09T10:01:00Z"), /previous order step/);
+  assert.throws(() => advanceOrder(reported, "label", "2026-10-09T10:01:00Z", "USPS-DEMO-1001"), /previous order step/);
+  assert.equal(original.stage, "awaiting_payment");
+});
+
+test("verified sample order follows packing, label, carrier acceptance, and delivery", () => {
+  let order = sampleOrders()[0];
+  const total = order.invoice.total;
+  for (const [index, action] of ["confirm", "pack", "label", "transit", "deliver"].entries()) {
+    order = advanceOrder(order, action, `2026-10-09T1${index}:00:00Z`, "USPS-DEMO-1001");
+    if (action === "label") assert.equal(order.stage, "label_created");
+  }
+  assert.equal(order.stage, "delivered");
+  assert.equal(order.invoice.total, total);
+  assert.equal(order.events.length, 6);
+  assert.equal(findOrder([order], "pow-demo-1001"), order);
+  assert.throws(() => advanceOrder(order, "pack", "2026-10-09T16:00:00Z"));
+});
+
+test("holds prevent advancing and release retains the prior stage", () => {
+  const packed = advanceOrder(advanceOrder(sampleOrders()[0], "confirm", "2026-10-09T10:00:00Z"), "pack", "2026-10-09T11:00:00Z");
+  const held = advanceOrder(packed, "hold", "2026-10-09T12:00:00Z");
+  assert.throws(() => advanceOrder(held, "label", "2026-10-09T13:00:00Z", "USPS-DEMO-1001"), /hold/);
+  const released = advanceOrder(held, "resume", "2026-10-09T14:00:00Z");
+  assert.equal(released.stage, "packed");
+  assert.equal(released.held, false);
+});
+
+test("repeated invoice saves are idempotent and cannot regress staff progress", () => {
+  const original = sampleOrders()[0];
+  const confirmed = advanceOrder(original, "confirm", "2026-10-09T10:00:00Z");
+  const records = upsertInvoice([confirmed], reportManualPayment(original.invoice));
+  assert.equal(records.length, 1);
+  assert.equal(records[0].stage, "payment_confirmed");
+  assert.match(invoiceText(records[0].invoice, true), /Payment confirmed by staff \(simulation\); no real funds verified/);
+  assert.deepEqual(upsertInvoice(records, original.invoice), records);
+  const reported = upsertInvoice([original], reportManualPayment(original.invoice));
+  assert.equal(reported[0].stage, "payment_reported");
+});
+
+test("stored demo orders reject corrupt records and strip unrelated customer fields", () => {
+  const order = sampleOrders()[0];
+  const restored = parseOrders(JSON.stringify({version: 1, orders: [{...order, email: "private@example.com"}]}));
+  assert.equal("email" in restored[0], false);
+  assert.deepEqual(restored[0], order);
+  assert.throws(() => parseOrders("broken json"));
+  assert.throws(() => parseOrders(JSON.stringify({version: 1, orders: [order, order]})));
+  assert.throws(() => parseOrders(JSON.stringify({version: 1, orders: [{...order, tracking: "real-tracking-number"}]})));
+  assert.throws(() => orderFromInvoice({...order.invoice, total: 0}));
+});
+
+test("tracking unknown orders does not fall back to another customer's record", () => {
+  assert.equal(findOrder(sampleOrders(), "unknown-order"), undefined);
+  assert.equal(findOrder(sampleOrders(), ""), undefined);
+});
 
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
 workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
