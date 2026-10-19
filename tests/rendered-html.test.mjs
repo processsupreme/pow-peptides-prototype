@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { descendants, estimateShare, initialNetwork, networkSales, parseNetwork, updateNetwork } from "../app/affiliate-network.ts";
 import { FIRST_ORDER_OFFER_KEY, FIRST_ORDER_OFFER_COOKIE, claimFirstOrderOffer, readOfferStatus, redeemFirstOrderOffer, isShoppingRoute, resilientOfferStorage } from "../app/first-order-offer.ts";
 import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bundles.ts";
 import { creamCartItem, powCream } from "../app/pow-cream.ts";
@@ -917,4 +918,72 @@ test("cream purchases retain jar quantity, selected pricing, and invoice arithme
   assert.equal(twoJars.merchandise,78);
   assert.equal(twoJars.total,143.71);
   assert.equal(twoJars.lines[0].qty,2);
+});
+
+test("downline attribution follows sponsor branches and excludes a member's own sales", () => {
+  const state = initialNetwork();
+  assert.deepEqual(descendants(state, "you").map(row => [row.member.id, row.depth]), [["alex",1],["sam",2],["riley",2],["jordan",1]]);
+  assert.deepEqual(networkSales(state, "alex").map(row => row.member), ["sam"]);
+  assert.equal(networkSales(state, "you").length, 4);
+  assert.equal(networkSales(state, "riley").length, 0);
+});
+
+test("network recruiting, activation and payment steps preserve sponsor attribution", () => {
+  const baseline = initialNetwork();
+  let state = updateNetwork(baseline, {type:"invite", sponsor:"alex"});
+  const member = state.members.at(-1).id;
+  assert.throws(() => updateNetwork(state, {type:"sale", member}), /Join/);
+  assert.throws(() => updateNetwork(state, {type:"invite", sponsor:member}), /active sponsor/);
+  state = updateNetwork(state, {type:"activate", member});
+  assert.throws(() => updateNetwork(state, {type:"activate", member}), /already active/);
+  state = updateNetwork(state, {type:"sale", member});
+  const sale = state.sales.at(-1).id;
+  assert.equal(networkSales(state, "you").at(-1).depth, 2);
+  assert.equal(networkSales(state, "alex").at(-1).depth, 1);
+  assert.throws(() => updateNetwork(state, {type:"refund", sale}), /cannot move/);
+  state = updateNetwork(state, {type:"confirm", sale});
+  assert.equal(state.sales.at(-1).status, "confirmed");
+  assert.throws(() => updateNetwork(state, {type:"confirm", sale}), /cannot move/);
+  state = updateNetwork(state, {type:"refund", sale});
+  assert.equal(state.sales.at(-1).status, "refunded");
+  assert.throws(() => updateNetwork(state, {type:"confirm", sale}), /cannot move/);
+  assert.deepEqual(baseline, initialNetwork());
+  assert.deepEqual(parseNetwork(JSON.stringify(state)), state);
+});
+
+test("share estimates require an explicit rate and exclude unpaid and refunded sales", () => {
+  assert.equal(estimateShare(80000, "confirmed", ""), null);
+  assert.equal(estimateShare(80000, "confirmed", "5"), 4000);
+  assert.equal(estimateShare(80000, "confirmed", "0"), 0);
+  assert.equal(estimateShare(101, "confirmed", "2.5"), 3);
+  assert.equal(estimateShare(80000, "pending", "5"), 0);
+  assert.equal(estimateShare(80000, "refunded", "5"), 0);
+  for (const rate of ["-1","101","NaN","Infinity","1e1","2.555"]) assert.throws(() => estimateShare(80000,"confirmed",rate));
+  const sales = networkSales(initialNetwork(), "you");
+  const sum = rows => rows.reduce((total,row) => total + estimateShare(row.cents,row.status,"5"),0);
+  assert.equal(sum(sales.filter(row => row.depth === 1)),4000);
+  assert.equal(sum(sales),7000);
+});
+
+test("saved affiliate scenarios reject cycles, orphan members, duplicate orders and invalid amounts", () => {
+  assert.throws(() => parseNetwork("null"));
+  assert.throws(() => parseNetwork("broken"));
+  for (const mutate of [
+    state => {state.members[1].sponsor="sam";},
+    state => {state.members[1].sponsor="missing";},
+    state => {state.members[1].sponsor="riley";},
+    state => {state.members[1].id="you";},
+    state => {state.sales.push(state.sales[0]);},
+    state => {state.sales[0].cents=-100;},
+    state => {state.sales[0].member="riley";},
+    state => {state.sales[0].status="paid-out";},
+  ]) { const state = initialNetwork(); mutate(state); assert.throws(() => parseNetwork(JSON.stringify(state))); }
+});
+
+test("affiliate network deep link renders its tree, unset rate, controls and simulation boundary", async () => {
+  const response = await render("/partner/network");
+  assert.equal(response.status,200);
+  const html = (await response.text()).replaceAll("<!-- -->", "");
+  for (const text of ["See your network grow", "Who brought whom", "Alex · sample affiliate", "Hypothetical share", "Not calculated", "Simulate inviting a recruit", "Simulate confirmation", "Simulate refund", "What POW! still needs to decide", "no earnings are owed or paid"]) assert.ok(html.includes(text), text);
+  assert.match(html, /href="\/partner\/network"|Affiliate network demo/);
 });

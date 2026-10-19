@@ -28,6 +28,7 @@ All development and builds run on the Mac mini at `/Users/johnny/Projects/pow-pe
 - `/subscribe`, `/partners`, `/about`, `/support` — supporting public views
 - `/account` and account subroutes — interactive customer account and autoship controls
 - `/partner` and partner subroutes — Command Center, links, masked customers, commission ledger, payouts, creative, and rules
+- `/partner/network` — synthetic sponsor tree, recruiting, downline sales and hypothetical share calculator; see [affiliate walkthrough](docs/WORK_ORDER_AUDIT.md)
 - `/r/[partnerSlug]` — referral entry that is captured before the gate
 - `/ops` — connected sample order queue with payment verification, packing, USPS label/acceptance/delivery simulations, holds, and customer email previews
 - `/account/orders` and `/track-order` — shared sample order history and tracking, connected to sample checkout invoices

@@ -1,5 +1,13 @@
 # Project status and roadmap
 
+## Affiliate network release October 19 2026
+
+Prepared an affiliate-only release from verified production commit `ea34568`, porting the network work from `3f9ab83`. The prior local inventory/pricing prototype remains on its original branch and is excluded from this release. Added `/partner/network`, its navigation links, the synthetic sponsor/recruiting tree, downline sales filters, simulated confirmation/refunds, and an unset hypothetical commission calculator. See [work-order audit and walkthrough](WORK_ORDER_AUDIT.md). Real commission rates, attribution rules, accounts and payouts remain deferred client/production work.
+
+Validation: all 91 applicable tests passed, lint passed with 11 existing image warnings, and Vinext built successfully. `vercel build --prod` ran `npm run vercel-build` and TypeScript locally on the Mini and produced `.vercel/output` for a prebuilt upload. Existing npm install-script restrictions and the broad Node engine warning remain; no policy bypass or dependency upgrade was performed. The original feature received desktop/mobile browser QA, including recruiting, persistence, calculation changes, refunds, empty branches and horizontal overflow checks.
+
+Release uses the existing Vercel project and domain. No merge or Git push is included: automatic Git builds remain enabled/unverified for Mini-only execution. Deployment uses the locally generated Build Output API artifact; no remote source build is requested. Publication and live verification will be recorded after completion.
+
 ## Connected order management and USPS workflow October 9 2026
 
 The user clarified that POW has no order management system and currently ships through USPS. Added a connected local prototype and a staff operating guide in [ORDER_OPERATIONS.md](ORDER_OPERATIONS.md). Reviewing a checkout invoice now creates a non-personal sample order; payment reports enter review without confirming funds. Staff at `/ops` can simulate verification, packing, label entry, carrier acceptance, delivery, and reversible holds. Search, status filters, queue counts, and unsent customer email previews explain the workflow. The previous responsibilities map remains under Operations.
