@@ -19,7 +19,7 @@ The deployed partner portal had coupon and ledger previews but no sponsor tree o
 
 The scenario is intentionally independent of the existing coupon inventory and staff checkout orders. Production still requires approved percentages and earning levels, eligibility/attribution/refund rules, approval and payout timing, authenticated accounts, shared storage, and a server-side ledger tied to verified orders. The client request still says the percentage is TBD.
 
-**Delivery:** implemented locally on this branch; not published by this task. `/partner/network` on the current live deployment must not be presented as the completed new feature until a separate deployment succeeds.
+**Delivery update — October 19:** published at <https://pow-peptides-prototype.vercel.app/partner/network> after the user’s separate deployment instruction. Release commit `db8a550` contains only the affiliate changes on top of the prior live version; the local inventory editor is excluded. Vercel received a prebuilt artifact generated on the Mini. The tree and calculator were verified on the public domain. Production commission rates and payouts remain unconfigured.
 
 ### POW-006 — Zelle and Venmo details
 
