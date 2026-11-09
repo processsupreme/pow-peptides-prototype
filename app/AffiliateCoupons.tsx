@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import AffiliateCommission from "./AffiliateCommission";
 import { COUPON_TIERS, issueCoupon, revokeCoupon, type CouponStatus } from "./affiliate-coupons";
 import { updateCouponInventory, useAffiliateCoupons } from "./useAffiliateCoupons";
 
@@ -33,6 +34,7 @@ export default function AffiliateCoupons() {
   return <section className="affiliate-coupons" aria-labelledby="coupon-inventory-title">
     <header className="coupon-inventory-head"><div><span>YOUR AFFILIATE PROFILE / COUPONS</span><h2 id="coupon-inventory-title">Give a little<br/><em>POW!</em></h2><p>Assign a discount to one customer. Follow every code from your inventory to their checkout.</p></div><div className="coupon-policy-stamp"><b>ONE CUSTOMER.<br/>ONE USE.</b><span>Recipient email required</span></div></header>
     <p className="coupon-demo-note"><b>Local prototype.</b> Use sample @example.com addresses. Codes work only in this browser’s demo. Real sharing protection requires verified accounts and server-side redemption.</p>
+    <AffiliateCommission discount={tier} onDiscount={setTier}/>
     {error ? <p role="alert">{error}</p> : !state.profile ? <div className="coupon-empty"><h3>Your coupon inventory starts at signup.</h3><p>Complete the partner application demo to create your sample profile and receive sample codes at 10%, 15%, 20%, and 25%.</p><a className="button primary" href="/partners#apply">Complete demo signup →</a></div> : <>
       <div className="coupon-profile"><b>{state.profile.name}</b><span>Profile {state.profile.id.slice(0, 8)} · Sample allocation: 2 codes per tier</span></div>
       <div className="coupon-tier-grid">{COUPON_TIERS.map(percent => <button key={percent} type="button" aria-pressed={tier === percent} onClick={() => setTier(percent)}><b>{percent}%</b><span>{state.coupons.filter(coupon => coupon.percent === percent && coupon.status === "available").length} available</span></button>)}</div>

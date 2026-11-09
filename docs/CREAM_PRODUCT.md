@@ -1,21 +1,25 @@
-# POW! Cream product concept
+# POW! Balm product concept
 
-The user requested a product image in a balm/cream jar, original description, and a price decision on October 8, 2026. The selected prototype price is **$39 per jar**. This is a retail concept decision made at the user's direction, not a cost-based margin calculation. No jar size or stock quantity has been supplied.
+Updated November 9, 2026 from the user's supplied details: **POW! Balm, 2 oz, $78 per jar, Diphenhydramine + KP**. These replace the October 8 cream concept and selected $39 price. KP follows the latest spelling; confirmation against the earlier KPV wording remains open. No stock quantity has been supplied.
 
 ## Product copy
 
-**POW! Cream — Benadryl + KPV**
+> A little comfort, with a lot of POW! A 2 oz balm featuring Diphenhydramine + KP. POW! describes its patented formula as intended for localized skin comfort, targeting the stinging, welts, and itching that can follow an injection.
 
-> A little comfort, with a lot of POW! Benadryl and KPV come together in a balm-style cream designed for localized skin comfort. POW!’s product brief targets the stinging, welts, and itching that can follow an injection.
-
-The product accordion attributes the patent and intended-use description to POW and identifies the remaining documentation. No clinical results, concentrations, directions, or patent number were invented. Jar size, final formula/label, evidence, patent documentation, and actual availability remain unresolved. These do not block the local shopping demonstration.
+The patent and intended-use statements remain attributed to POW. Patent documentation, ingredient concentrations, directions, final packaging, product evidence, and availability remain pending. The user requested a registered trademark symbol; registration confirmation is still needed before adding ®. A patent does not establish trademark registration. No registration, patent number, or clinical evidence was invented.
 
 ## Shopping behavior
 
-- Homepage spotlight immediately below the hero, compact shop feature, and `/shop/pow-cream` detail page use one product record in `app/pow-cream.ts`.
-- Each addition places one $39 jar in the existing local cart. Repeated additions and cart quantity controls count jars. The cart uses the product image and says “per jar.”
-- Existing welcome/affiliate discounts, fees, and selected shipping apply through the shared totals. Invoice snapshots retain the cream name, jar description, price, and quantity.
-- No live sale, shipment, stock decrement, or payment is created. The supplied research-vial inventory remains untouched.
+- Homepage spotlight, shop feature, navigation, and `/shop/pow-cream` use the shared product record in `app/pow-cream.ts`. The existing URL and cart ID are retained for compatibility.
+- Each addition places one $78, 2 oz jar in the local cart. Open carts containing the old $39 item refresh to current details while preserving quantities. Previously saved invoices and orders retain their historical snapshots.
+- Existing welcome/affiliate discounts, demo fees, and shipping apply through the shared totals. No live sale, shipment, stock decrement, or payment is created. Supplied vial inventory remains untouched.
+
+## November 9 image edit
+
+- Current asset: `public/products/pow-balm-2oz-jar.png`.
+- Built-in imagegen edited the prior jar concept to read **BALM**, **DIPHENHYDRAMINE + KP**, and **2 OZ**, preserving the jar, cream swirl, lid, studio background, and black/white/lime identity.
+- No trademark symbol, patent badge, price, or medical claim appears on the label. The generated image was visually inspected; it is proposed packaging, not a manufactured-product photograph.
+- The earlier asset and original approved brand artwork remain unchanged. The original October 8 provenance below records the superseded label.
 
 ## Image provenance
 

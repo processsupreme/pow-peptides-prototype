@@ -1,5 +1,15 @@
 # Project status and roadmap
 
+## Balm details and affiliate commission tiers November 9 2026
+
+Updated POW! Balm to the supplied 2 oz size, $78 price, and Diphenhydramine + KP label across the product spotlight, shop detail, navigation, cart and new invoice snapshots. Edited the jar concept image without changing approved brand assets. Open carts refresh old balm details; historical invoice/order snapshots keep their original amounts. The existing `/shop/pow-cream` route stays compatible. KP follows the latest spelling pending clarification against earlier KPV; trademark registration is unconfirmed, so no ® was added. Patent and intended-use statements remain attributed to POW. See [balm details](CREAM_PRODUCT.md).
+
+Added the supplied affiliate tiers exactly: Tier 1 30%, Tier 2 20%, Tier 3 25%, Tier 4 15%. Qualification thresholds remain Mike's decision. The interactive `/partner/coupons` preview subtracts customer-discount percentage points, demonstrating 30% − 10 points = 20%. Preview selection is not an account assignment; dollar payout basis and excess-discount handling remain open. The separate downline calculator stays hypothetical. See [coupon commission rules](AFFILIATE_COUPONS.md).
+
+Validation: lint passes with 11 existing image warnings; all 94 tests and the Vinext build pass; Next production build and TypeScript pass after the documented local CSS-worker sandbox retry on the Mini. Added generated `.vercel` output to ESLint ignores after the initial lint run encountered old deployment artifacts. No dependencies changed. Automated coverage includes all supplied tiers, percentage-point subtraction, invalid inputs, rendered coupon copy, updated balm pricing, and stale-cart refresh without historical invoice mutation. Browser interaction/visual QA could not be completed because the Chrome automation tool failed while opening the local preview; responsive layout and hydration remain unverified for this change. Image label was visually inspected separately.
+
+Local feature branch only. No push, merge, remote build, or deployment. External Git build triggers remain unverified for Mini-only execution; deployment requires a separate user instruction.
+
 ## Affiliate network release October 19 2026
 
 Prepared an affiliate-only release from verified production commit `ea34568`, porting the network work from `3f9ab83`. The prior local inventory/pricing prototype remains on its original branch and is excluded from this release. Added `/partner/network`, its navigation links, the synthetic sponsor/recruiting tree, downline sales filters, simulated confirmation/refunds, and an unset hypothetical commission calculator. See [work-order audit and walkthrough](WORK_ORDER_AUDIT.md). Real commission rates, attribution rules, accounts and payouts remain deferred client/production work.

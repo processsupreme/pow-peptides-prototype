@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { AFFILIATE_TIERS, remainingCommissionRate } from "../app/affiliate-commission.ts";
 import { descendants, estimateShare, initialNetwork, networkSales, parseNetwork, updateNetwork } from "../app/affiliate-network.ts";
 import { FIRST_ORDER_OFFER_KEY, FIRST_ORDER_OFFER_COOKIE, claimFirstOrderOffer, readOfferStatus, redeemFirstOrderOffer, isShoppingRoute, resilientOfferStorage } from "../app/first-order-offer.ts";
 import { researchBundles, bundleContents, bundleCartItem } from "../app/pow-bundles.ts";
-import { creamCartItem, powCream } from "../app/pow-cream.ts";
+import { creamCartItem, powCream, refreshCreamCartItem } from "../app/pow-cream.ts";
 import { demoCheckoutTotals } from "../app/demo-checkout-totals.ts";
 import { createManualInvoice, reportManualPayment, parseManualInvoice, invoiceText, POW_PAYMENT_PHONE } from "../app/manual-invoice.ts";
 import { advanceOrder, findOrder, orderFromInvoice, parseOrders, sampleOrders, upsertInvoice } from "../app/demo-orders.ts";
@@ -876,12 +877,12 @@ test("POW cream is featured before the catalog with its balm image, selected pri
   const html = (await (await render("/")).text()).replaceAll("<!-- -->", "");
   assert.ok(html.indexOf('id="pow-cream"') < html.indexOf('class="product-section"'));
   const cream = html.split('id="pow-cream"')[1].split("</section>")[0];
-  assert.match(cream, /Benadryl \+ KPV/);
+  assert.match(cream, /Diphenhydramine \+ KP/);
   assert.match(cream, /stinging, welts, and itching/);
   assert.match(cream, /Patent documentation/);
-  assert.match(cream, /\$39/);
-  assert.match(cream, /Add cream to test cart/);
-  assert.match(cream, /products\/pow-cream-balm-jar.png/);
+  assert.match(cream, /\$78/);
+  assert.match(cream, /Add balm to test cart/);
+  assert.match(cream, /products\/pow-balm-2oz-jar.png/);
   assert.doesNotMatch(cream, /Price to be confirmed|Product photography coming/);
 });
 
@@ -891,10 +892,10 @@ test("cream has a dedicated product page and is discoverable in the shop", async
     const response=await render(path);
     assert.equal(response.status,200);
     const html=(await response.text()).replaceAll("<!-- -->", "");
-    assert.match(html,/Benadryl \+ KPV/);
-    assert.match(html,/\$39/);
-    assert.match(html,/Add cream to test cart/);
-    assert.match(html,/pow-cream-balm-jar.png/);
+    assert.match(html,/Diphenhydramine \+ KP/);
+    assert.match(html,/\$78/);
+    assert.match(html,/Add balm to test cart/);
+    assert.match(html,/pow-balm-2oz-jar.png/);
   }
   assert.equal(isShoppingRoute("/shop/pow-cream"),true);
   const image=await readFile(new URL("../public"+powCream.image,import.meta.url));
@@ -904,19 +905,19 @@ test("cream has a dedicated product page and is discoverable in the shop", async
 test("cream purchases retain jar quantity, selected pricing, and invoice arithmetic", () => {
   const item=JSON.parse(JSON.stringify(creamCartItem()));
   assert.equal(item.unitLabel,"jar");
-  assert.equal(item.unitPrice,39);
+  assert.equal(item.unitPrice,78);
   assert.equal(item.qty,1);
   assert.equal(item.slug,"pow-cream");
   assert.doesNotMatch(item.strength,/vial|mg|mL|IU/);
   const invoice=createManualInvoice({...invoiceInput,lines:[item]},invoiceId,invoiceDate);
-  assert.equal(invoice.total,48.86);
-  assert.equal(invoice.lines[0].name,"POW! Cream");
+  assert.equal(invoice.total,85.71);
+  assert.equal(invoice.lines[0].name,"POW! Balm");
   assert.match(invoiceText(invoice),/1 jar/);
   assert.deepEqual(parseManualInvoice(JSON.stringify(invoice)),invoice);
   item.qty=2;
   const twoJars=createManualInvoice({...invoiceInput,lines:[item],shippingMethod:"overnight"},invoiceId,invoiceDate);
-  assert.equal(twoJars.merchandise,78);
-  assert.equal(twoJars.total,143.71);
+  assert.equal(twoJars.merchandise,156);
+  assert.equal(twoJars.total,217.42);
   assert.equal(twoJars.lines[0].qty,2);
 });
 
@@ -986,4 +987,38 @@ test("affiliate network deep link renders its tree, unset rate, controls and sim
   const html = (await response.text()).replaceAll("<!-- -->", "");
   for (const text of ["See your network grow", "Who brought whom", "Alex · sample affiliate", "Hypothetical share", "Not calculated", "Simulate inviting a recruit", "Simulate confirmation", "Simulate refund", "What POW! still needs to decide", "no earnings are owed or paid"]) assert.ok(html.includes(text), text);
   assert.match(html, /href="\/partner\/network"|Affiliate network demo/);
+});
+
+
+test("affiliate commission follows supplied tier numbering and subtracts discount points", () => {
+  assert.deepEqual(AFFILIATE_TIERS.map(tier => [tier.id,tier.percent]), [[1,30],[2,20],[3,25],[4,15]]);
+  assert.equal(remainingCommissionRate(1,10),20);
+  assert.equal(remainingCommissionRate(2,10),10);
+  assert.equal(remainingCommissionRate(3,10),15);
+  assert.equal(remainingCommissionRate(4,10),5);
+  assert.equal(remainingCommissionRate(4,15),0);
+  assert.equal(remainingCommissionRate(4,25),-10);
+  for (const [tier,discount] of [[0,10],[5,10],[1,-1],[1,101],[1,NaN]]) assert.throws(()=>remainingCommissionRate(tier,discount));
+});
+
+test("coupon page explains rate reduction and leaves qualification and dollar payouts unresolved", async () => {
+  const html=(await (await render("/partner/coupons")).text()).replaceAll("<!-- -->", "");
+  assert.match(html,/30% to 20%/);
+  assert.match(html,/20% commission rate/);
+  assert.match(html,/Mike to set thresholds/);
+  assert.match(html,/Dollar commissions await confirmation/);
+  assert.match(html,/Preview affiliate tier/);
+});
+
+test("open balm carts refresh the old price and label without rewriting saved invoice snapshots", () => {
+  const old={...creamCartItem(),name:"POW! Cream",unitPrice:39,strength:"Benadryl + KPV · 1 jar",qty:2};
+  const invoice=createManualInvoice({...invoiceInput,lines:[old]},invoiceId,invoiceDate);
+  const refreshed=refreshCreamCartItem(old);
+  assert.equal(refreshed.name,"POW! Balm");
+  assert.equal(refreshed.unitPrice,78);
+  assert.equal(refreshed.qty,2);
+  assert.match(refreshed.strength,/2 oz/);
+  assert.equal(invoice.lines[0].unitPrice,39);
+  assert.equal(invoice.merchandise,78);
+  assert.equal(old.unitPrice,39);
 });

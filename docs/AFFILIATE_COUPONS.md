@@ -2,6 +2,21 @@
 
 POW requested affiliate-owned inventories of 10%, 15%, 20%, and 25% discount codes, issued after signup and redeemable at checkout without unrestricted customer-to-customer reuse. This implementation demonstrates that journey locally. It does not activate live affiliates, send messages, verify identity, or create real orders.
 
+## Supplied commission rules — November 9, 2026
+
+| Affiliate tier | Base commission | After a 10% customer discount |
+| --- | --- | --- |
+| Tier 1 | 30% | 20% |
+| Tier 2 | 20% | 10% |
+| Tier 3 | 25% | 15% |
+| Tier 4 | 15% | 5% |
+
+Tier numbering is exactly as supplied, including Tier 2 at 20% and Tier 3 at 25%. Mike will set qualification thresholds; the demo does not infer sales targets or automatically assign tiers.
+
+Customer discounts subtract percentage points from the affiliate rate: 30% − 10 points = 20%, not 27%. `/partner/coupons` includes an interactive tier/rate preview linked to its customer discount selection. Affiliate tiers are separate from the four customer coupon percentages and from hypothetical downline rates on `/partner/network`.
+
+Dollar payouts await confirmation of their calculation base: for $100 before a 10% discount, does a 20% rate pay $20 on the original merchandise or $18 on the discounted $90? Discounts above a tier's commission show a policy-decision state; no negative payout or new coupon restriction is invented. Tier qualification, promotion/demotion rules, payout basis, and handling of excess discounts remain open. Preview selection does not assign the logged-in sample profile a real tier or record earnings.
+
 ## Walkthrough
 
 1. On `/partners#apply`, complete the test application with synthetic details. Submission creates a **Sample affiliate** profile in this browser. Application fields are not stored or sent. The success state links to `/partner/coupons`.
@@ -20,7 +35,7 @@ POW requested affiliate-owned inventories of 10%, 15%, 20%, and 25% discount cod
 - **Larger offer only; no stacking.** An affiliate code wins a tie with the 10% welcome offer. This is the stated prototype default pending POW approval. Manual payment reports leave both offers available; consumption requires a future confirmed-order integration.
 - Discounts apply to merchandise including the supplied-price bundles, boxes, and cases. Base prices and inventory records are untouched. The existing demo 5% fee uses discounted merchandise; the $800 free-priority and $1,300 free-overnight thresholds use original merchandise. Final exclusions and subscription applicability remain undecided.
 - Example: a $200 order with a 25% affiliate code has $50 savings, $7.50 demo fee, $12 demo priority shipping, and a $169.50 total. The welcome offer adds no further discount.
-- Coupon ownership is recorded; no commission calculation or connection to the portal's separate illustrative ledger is invented. The existing sample order number/tracking fixture remains unchanged.
+- Coupon ownership is recorded. The supplied commission rates are previewed separately; no dollar payout or connection to the portal's illustrative ledger is created. The existing sample order number/tracking fixture remains unchanged.
 
 ## Data and limits
 

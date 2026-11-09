@@ -480,3 +480,16 @@
 .network-reset {justify-self:start;background:transparent;border:1px solid #999;padding:12px 18px;cursor:pointer}
 @media(max-width:1300px){.network-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.network-layout{grid-template-columns:1fr}.network-calculator-fields{grid-template-columns:1fr 1fr}.network-calculator-fields>div{grid-column:1/-1}}
 @media(max-width:600px){.network-intro{flex-direction:column}.network-summary article{padding:16px}.network-calculator-fields{grid-template-columns:1fr}.network-tree ul{padding-left:12px}.network-actions{flex-direction:column}.affiliate-network .panel{padding:18px}.affiliate-network .panel>header label{align-items:flex-start;flex-direction:column}}
+
+/* Affiliate coupon discounts reduce commission by percentage points. */
+.coupon-commission {margin:24px 0;min-width:0}
+.coupon-commission p {line-height:1.6}
+.coupon-commission-controls {display:flex;flex-wrap:wrap;gap:20px;margin:20px 0}
+.coupon-commission-controls label {display:grid;gap:8px;min-width:200px;font-weight:700}
+.coupon-commission-controls select {padding:12px;border:1px solid #888;background:white;color:#090909}
+.coupon-commission-equation {padding:18px;background:#f5f2e9;border-left:5px solid #a5ef2e;font-size:20px}
+.coupon-commission caption {text-align:left;padding:12px 0;color:#555;font-size:13px}
+.dash-main:has(.coupon-commission) {min-width:0}
+.coupon-commission .data-table {overflow-x:auto}
+.coupon-commission table {min-width:560px}
+@media(max-width:600px){.coupon-commission-controls{flex-direction:column}.coupon-commission-controls label{min-width:0}.coupon-commission{padding:16px}.coupon-commission-equation{font-size:17px}}
