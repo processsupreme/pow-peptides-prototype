@@ -65,6 +65,13 @@ The baseline had no separate typecheck script. During the subsequently authorize
 
 ## Hosting and push restriction
 
+### November 9, 2026 release workflow
+
+The user requested pushing and deploying the balm and affiliate-tier changes. `vercel.json` now sets `git.deploymentEnabled: false` to suppress automatic Git deployments for commits carrying this configuration, while retaining the existing project and domain. This implements the Mini-only build requirement using [Vercel's documented Git setting](https://vercel.com/docs/project-configuration/git-configuration). Older branches without this configuration can still trigger builds and must be inspected before pushing. Do not use `ignoreCommand` as a substitute: it runs inside a remote build.
+
+Read-only checks found no GitHub Actions workflows or repository webhooks, and no Vercel deploy hooks on the linked project. Build production artifacts locally using `vercel build --prod`; deploy with `vercel deploy --prebuilt --prod --skip-domain`, verify readiness, then promote. Never run a source deployment. Keep generated outputs and pulled environment files ignored. The previous release notes below describe historical configuration.
+
+
 Current phase clarification (September 8, 2026): this is an interactive product specification. Resolving Mini-only push/delivery configuration is deferred until closer to launch and is not a prerequisite for continued local prototype work. Production authentication, payments, recurring billing, and affiliate integrations are also deferred. Continue demonstrating these experiences with synthetic data; keep future integration requirements documented. This deferral does not itself authorize a push, remote build, or deployment.
 
 Subsequent authorization (September 8, 2026): the user explicitly requested “push and deploy everything.” The completed feature branch was pushed to the existing GitHub repository and triggered a Vercel preview build. Remote Vercel builds and production promotion for this release are authorized; the earlier baseline hold is historical. Keep the existing site identity and required checks. This release does not require merging into `main`.
